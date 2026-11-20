@@ -1,0 +1,178 @@
+/* "careers" feature: the 🏛 Tower panel (#panel). Scoped to .cr-* (style.css is shared); reuses
+   .comic-btn and the shared tokens (--ink, --paper, --s2, --r-btn, --fs-min, --body). */
+
+.cr-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cr-summary {
+  font-weight: 700;
+}
+
+.cr-sub,
+.cr-meta,
+.cr-none {
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.cr-none {
+  font-style: italic;
+}
+
+.cr-dept-h {
+  margin: 0.4rem 0 0.2rem;
+  font-size: 0.95rem;
+}
+
+.cr-workers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.cr-worker {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.45rem 0.55rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.5rem;
+  background: var(--paper);
+}
+
+.cr-worker.cr-is-retired {
+  opacity: 0.6;
+}
+
+.cr-top {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cr-name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.cr-key {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.cr-chip {
+  margin-left: auto;
+  padding: 0.05rem 0.5rem;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.cr-chip-trusted { background: var(--ok-wash); color: var(--ok-text); }
+.cr-chip-probation { background: var(--yellow-soft); color: var(--amber-text); }
+.cr-chip-enrolled { background: var(--sky-wash); color: var(--ink); }
+.cr-chip-lapsed { background: var(--line-cool); color: var(--muted); }
+.cr-chip-returned { background: var(--pink-wash); color: var(--pink-text); }
+.cr-chip-retired { background: var(--line-cool); color: var(--ink); }
+
+.cr-reason {
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.cr-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+}
+
+.cr-run {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.3rem;
+  font: 700 0.8rem var(--body, inherit);
+  background: var(--paper);
+  color: var(--ink);
+  padding: 0;
+}
+
+button.cr-run {
+  cursor: pointer;
+}
+
+.cr-clean { background: var(--ok-wash); color: var(--ok-text); }
+.cr-failed,
+.cr-abandoned { background: var(--pink-wash); color: var(--bad-text); }
+.cr-stopped { background: var(--yellow-soft); color: var(--amber-text); }
+.cr-empty { background: var(--yellow-soft); color: var(--amber-text); }
+.cr-unknown { opacity: 0.6; }
+
+.cr-routine {
+  overflow-wrap: anywhere;
+}
+
+.cr-actions,
+.cr-name-edit {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.cr-armed {
+  font-weight: 800;
+}
+
+.cr-name-input {
+  flex: 1 1 10rem;
+  min-width: 0;
+  height: 1.9rem;
+  padding: 0 0.4rem;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn, 0.4rem);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.cr-status {
+  font-size: 0.75rem;
+  min-height: 0;
+}
+
+.cr-status:empty {
+  display: none;
+}
+
+.cr-status.error {
+  color: var(--bad-text);
+}
+
+/* room.css has a global .cr-sub (nowrap + ellipsis) for the room grid: the Tower's lines wrap. */
+.cr-panel .cr-sub {
+  white-space: normal;
+  overflow: visible;
+}
+
+/* Trend line (last 10 runs with a verdict vs the 10 before). */
+.cr-trend-head { font-weight: 700; opacity: 0.9; }
+.cr-trend-up { color: var(--ok-text); opacity: 1; }
+.cr-trend-down { color: var(--bad-text); opacity: 1; }
+
+/* The worker the Home view opened the Tower at (openTowerAt). */
+.cr-worker.cr-focus {
+  outline: 3px solid var(--sky);
+  outline-offset: 2px;
+}

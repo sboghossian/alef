@@ -1,0 +1,760 @@
+/* 🧠 Brain view: the vault graph fills the main area; search, its results, graph stats/zoom and
+   the folder legend are left-sidebar sections/filters (views/brain.ts's filters()); an open note
+   is the ONE contextual details panel, docked at the right edge (.bv-note below). */
+.bv-root {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--paper);
+  color: var(--ink);
+  font: var(--fs-body)/1.45 var(--body);
+}
+.bv-box-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 4px 44px 4px 12px;
+  border-bottom: 3px solid var(--ink);
+  background: var(--yellow);
+  flex: none;
+}
+.bv-note-head {
+  padding-right: 8px;
+  background: var(--pink-wash);
+}
+.bv-box-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font: 800 var(--fs-md)/1.2 var(--display);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bv-fdot,
+.bv-hit-title i,
+.bv-link i,
+.bv-leg i {
+  display: inline-block;
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+}
+.bv-head-btns {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+  flex: none;
+}
+.bv-mini,
+.bv-graph-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: var(--btn-h, 32px);
+  padding: 0 9px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn, 9px);
+  background: var(--paper);
+  color: var(--ink);
+  font: 800 var(--fs-sm)/1 var(--body);
+  cursor: pointer;
+  text-decoration: none;
+}
+.bv-mini:hover,
+.bv-graph-controls button:hover {
+  background: var(--yellow-wash);
+}
+.bv-obsidian {
+  background: var(--sky-wash);
+}
+:is(.bv-mini, .bv-graph-controls button, .bv-results button, .bv-link, .bv-lg-node):focus-visible {
+  outline: 3px solid var(--sky);
+  outline-offset: 1px;
+}
+.bv-empty {
+  margin: 10px 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.bv-meta {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* ---- search results: a sidebar section, right under the "Search the vault" filter ---- */
+.bv-results {
+  max-height: 320px;
+  overflow: auto;
+}
+.bv-results ul,
+.bv-links {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 10px;
+}
+.bv-results button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-bottom: 2px dashed var(--line);
+  background: transparent;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--ink);
+  font: var(--fs-body)/1.35 var(--body);
+}
+.bv-results button:hover,
+.bv-results button.bv-on {
+  background: var(--yellow-wash);
+}
+.bv-hit-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+}
+.bv-hit-path {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bv-hit-snip {
+  font-size: var(--fs-sm);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ---- graph canvas (the view itself: fills .bv-root edge to edge) ---- */
+.bv-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* ---- sidebar sections: "Graph" (stats + zoom/fit), "Legend" (folder colors) ---- */
+.bv-sec-graph {
+  display: grid;
+  gap: 8px;
+}
+.bv-stats {
+  font: 700 var(--fs-sm)/1.3 var(--body);
+}
+.bv-stats:empty {
+  display: none;
+}
+.bv-graph-controls {
+  display: flex;
+  gap: 6px;
+}
+.bv-graph-controls button {
+  width: 36px;
+  font-size: var(--fs-md);
+  box-shadow: var(--ch-sh-sm);
+}
+.bv-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.bv-leg {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  font: 700 var(--fs-sm)/1.2 var(--body);
+  cursor: default;
+}
+
+/* ---- Legend toggles (round 11, package D): every folder/type, vault-wide, with a real
+   checkbox that switches it on/off in the graph (views/brain.ts's applyFilters). ---- */
+.bv-leg-stats {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.bv-leg-section {
+  margin-bottom: 10px;
+}
+.bv-leg-section h4 {
+  margin: 0 0 5px;
+  font: 800 var(--fs-xs) var(--display, inherit);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+.bv-leg-section .bv-leg {
+  display: flex;
+  width: 100%;
+  margin-bottom: 4px;
+  border-radius: var(--r-btn, 9px);
+}
+.bv-leg-toggle {
+  cursor: pointer;
+}
+.bv-leg-toggle input {
+  margin: 0;
+  flex: none;
+}
+.bv-leg-toggle:has(input:not(:checked)) {
+  opacity: 0.45;
+  background: transparent;
+}
+.bv-leg-tags {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  line-height: 1.5;
+}
+.bv-minimap {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 170px;
+  height: 120px;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  background: var(--cream);
+  box-shadow: var(--ch-sh-md);
+  overflow: hidden;
+}
+.bv-minimap canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: pointer;
+}
+.bv-tip {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  gap: 2px;
+  max-width: 260px;
+  padding: 7px 10px;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-md);
+  font: var(--fs-sm)/1.35 var(--body);
+  pointer-events: none;
+}
+.bv-tip b {
+  font-size: var(--fs-body);
+}
+.bv-tip span {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+/* ---- note: the ONE contextual details panel, docked full height at the main area's right edge
+   (same geometry as the shell's #panel), shown only while a note is open, closed by its own ✕
+   or Esc. .bv-root already IS the main area, so this needs no shell insets: it just docks to
+   .bv-root's own right edge. ---- */
+.bv-note {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(360px, 100%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--paper);
+  border-left: 3px solid var(--ink);
+  overflow: hidden;
+}
+.bv-note-body {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 18px 24px;
+  outline: none;
+}
+.bv-crumbs {
+  font: 700 var(--fs-sm)/1.3 var(--body);
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.bv-chip {
+  display: inline-block;
+  padding: 1px 7px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--sky-wash);
+  color: var(--ink);
+  font-weight: 800;
+}
+.bv-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 6px 0;
+}
+.bv-refused {
+  margin: 12px 0;
+  padding: 14px 16px;
+  border: 3px dashed var(--ink);
+  border-radius: var(--r-card, 14px);
+  background: var(--pink-wash);
+  font-weight: 800;
+}
+.bv-climb {
+  margin: 8px 0 10px;
+  padding: 8px 10px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-card, 14px);
+  background: var(--paper);
+}
+.bv-climb-head {
+  display: block;
+  margin-bottom: 4px;
+  font: 800 var(--fs-sm)/1.2 var(--display);
+}
+.bv-climb-head b {
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  font: 800 var(--fs-xs)/1.2 var(--body);
+}
+.bv-climb ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.bv-climb li {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.bv-climb li + li::before {
+  content: "›";
+  color: var(--muted);
+  font-weight: 800;
+}
+.bv-climb small {
+  color: var(--muted);
+  font: 700 var(--fs-xs)/1.2 var(--body);
+}
+.bv-climb-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: 800 var(--fs-sm)/1.3 var(--body);
+  cursor: pointer;
+}
+.bv-climb-step:hover,
+.bv-climb-step:focus-visible {
+  background: var(--yellow);
+}
+.bv-climb-step i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+}
+.bv-climb-warn {
+  margin: 6px 0 0;
+  font: 700 var(--fs-sm)/1.3 var(--body);
+  color: var(--muted);
+}
+.bv-section {
+  margin-top: 18px;
+  padding-top: 10px;
+  border-top: 3px solid var(--ink);
+}
+.bv-section h3 {
+  margin: 0 0 6px;
+  font: 800 var(--fs-md)/1.2 var(--display);
+}
+.bv-section h3 b {
+  display: inline-block;
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--yellow);
+  border: 2px solid var(--ink);
+  font: 800 var(--fs-sm)/1.2 var(--body);
+  text-align: center;
+}
+.bv-link {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 5px 6px;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink);
+  font: 700 var(--fs-body)/1.3 var(--body);
+  min-height: 32px;
+}
+.bv-link:hover {
+  background: var(--sky-wash);
+}
+.bv-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bv-link small {
+  margin-left: auto;
+  color: var(--muted);
+  font-weight: 600;
+  font-size: var(--fs-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 45%;
+}
+.bv-local {
+  width: 100%;
+  height: auto;
+  background: var(--cream);
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+}
+.bv-local line {
+  stroke: var(--line-cool);
+  stroke-width: 1.5;
+}
+.bv-local line.bv-lg-out {
+  stroke: var(--sky);
+}
+.bv-local line.bv-lg-back {
+  stroke: var(--pink);
+}
+.bv-local line.bv-lg-both {
+  stroke: var(--ink);
+  stroke-width: 2.5;
+}
+.bv-lg-node {
+  cursor: pointer;
+}
+.bv-lg-node circle {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+.bv-lg-node text {
+  font: 700 var(--fs-xs)/1 var(--body);
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--cream);
+  stroke-width: 3px;
+}
+.bv-lg-center text {
+  font-size: var(--fs-sm);
+  font-weight: 900;
+}
+.bv-lg-node:hover circle {
+  stroke-width: 3;
+}
+.bv-lg-key {
+  display: flex;
+  gap: 12px;
+  font: 700 var(--fs-sm)/1.2 var(--body);
+  margin: 6px 0 0;
+}
+.bv-k-out {
+  color: var(--sky);
+}
+.bv-k-back {
+  color: var(--pink-text);
+}
+
+/* ---- rendered markdown ---- */
+.bv-md {
+  font: var(--fs-md)/1.6 var(--body);
+  overflow-wrap: anywhere;
+}
+.bv-md h1,
+.bv-md h2,
+.bv-md h3,
+.bv-md h4,
+.bv-md h5,
+.bv-md h6 {
+  font-family: var(--display);
+  line-height: 1.25;
+  margin: 1.1em 0 0.4em;
+}
+.bv-md h1 {
+  font-size: var(--fs-xl);
+}
+.bv-md h2 {
+  font-size: var(--fs-lg);
+}
+.bv-md h3 {
+  font-size: var(--fs-md);
+}
+.bv-md h4,
+.bv-md h5,
+.bv-md h6 {
+  font-size: var(--fs-md);
+}
+.bv-md p {
+  margin: 0.5em 0;
+}
+.bv-md ul,
+.bv-md ol {
+  margin: 0.4em 0;
+  padding-left: 1.4em;
+}
+.bv-md li {
+  margin: 0.15em 0;
+}
+.bv-md .md-task-item {
+  list-style: none;
+  margin-left: -1.2em;
+}
+.bv-md .md-done {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+.bv-md code {
+  font: var(--fs-sm)/1.4 "SF Mono", Menlo, Monaco, Consolas, monospace;
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+.bv-md .md-code {
+  margin: 0.6em 0;
+  padding: 10px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--cream);
+  overflow: auto;
+}
+.bv-md .md-code code {
+  padding: 0;
+  border: 0;
+  background: none;
+  white-space: pre;
+}
+.bv-md blockquote {
+  margin: 0.6em 0;
+  padding: 2px 12px;
+  border-left: 4px solid var(--sky);
+  background: var(--sky-wash);
+  border-radius: 0 8px 8px 0;
+}
+.bv-md .md-callout {
+  margin: 0.7em 0;
+  padding: 8px 12px;
+  border: 2px solid var(--ink);
+  border-left-width: 6px;
+  border-radius: 10px;
+  background: var(--cyan-wash);
+}
+.bv-md .md-callout > summary,
+.bv-md .md-callout-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  cursor: default;
+}
+.bv-md details.md-callout > summary {
+  cursor: pointer;
+}
+.bv-md .md-callout[data-callout="warning"],
+.bv-md .md-callout[data-callout="caution"],
+.bv-md .md-callout[data-callout="attention"] {
+  background: var(--yellow-wash);
+  border-left-color: var(--amber);
+}
+.bv-md .md-callout[data-callout="danger"],
+.bv-md .md-callout[data-callout="error"],
+.bv-md .md-callout[data-callout="failure"],
+.bv-md .md-callout[data-callout="fail"],
+.bv-md .md-callout[data-callout="bug"] {
+  background: var(--pink-wash);
+  border-left-color: var(--bad);
+}
+.bv-md .md-callout[data-callout="tip"],
+.bv-md .md-callout[data-callout="success"],
+.bv-md .md-callout[data-callout="done"],
+.bv-md .md-callout[data-callout="check"] {
+  background: var(--ok-wash);
+  border-left-color: var(--ok);
+}
+.bv-md .md-callout[data-callout="question"],
+.bv-md .md-callout[data-callout="example"] {
+  background: var(--sky-wash);
+  border-left-color: var(--violet);
+}
+.bv-md .md-table-wrap {
+  overflow-x: auto;
+  margin: 0.6em 0;
+}
+.bv-md table {
+  border-collapse: collapse;
+  font-size: var(--fs-body);
+}
+.bv-md th,
+.bv-md td {
+  border: 2px solid var(--ink);
+  padding: 4px 8px;
+  vertical-align: top;
+}
+.bv-md th {
+  background: var(--yellow-wash);
+}
+.bv-md hr {
+  border: 0;
+  border-top: 3px dashed var(--line);
+  margin: 1em 0;
+}
+.bv-md mark {
+  background: var(--yellow-soft);
+  padding: 0 2px;
+}
+.bv-md a,
+.bv-md .md-wikilink {
+  color: var(--sky);
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+.bv-md .md-wikilink {
+  text-decoration-style: dotted;
+}
+.bv-md .md-embed {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 2px dashed var(--sky);
+  border-radius: 6px;
+  text-decoration: none;
+}
+.md-tag {
+  display: inline-block;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--cyan-wash);
+  border: 1.5px solid var(--cyan);
+  color: #075985;
+  font: 700 var(--fs-sm)/1.6 var(--body);
+}
+
+/* ---- phone: the graph fills the view; an open note goes full-bleed (a 360px docked strip would
+   be unreadable); the minimap (like Canvas's) is hidden. Search/Graph/Legend/Folders live in the
+   shell's own sidebar, already turned into a bottom sheet there. ---- */
+body.alef-phone .bv-minimap {
+  display: none;
+}
+body.alef-phone .bv-note {
+  width: 100%;
+}
+body.alef-phone .bv-mini {
+  min-height: var(--touch, 44px);
+  min-width: 44px;
+}
+body.alef-phone .bv-note-body {
+  padding: 10px 12px 20px;
+}
+
+/* ---- 3D globe mode (views/brain-globe.ts): its own canvas over a bright sky backdrop; the 2D
+   canvas stays laid out (hidden) so the ResizeObserver keeps firing, the minimap is 2D-only ---- */
+.bv-3d {
+  background: radial-gradient(circle at 50% 42%, var(--cyan-wash) 0%, var(--cyan-wash) 38%, var(--paper) 72%);
+}
+.bv-3d .bv-canvas {
+  visibility: hidden;
+}
+.bv-3d .bv-minimap {
+  display: none;
+}
+.bv-globe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+.bv-globe-labels {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.bv-globe-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-sm);
+  font: 800 var(--fs-sm)/1.2 var(--display);
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+.bv-globe-label::before {
+  content: "";
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--dot, var(--line-cool));
+}
+.bv-globe:focus-visible {
+  outline: 3px solid var(--sky);
+  outline-offset: -3px;
+}
+
+/* ⚡ Wired to: a note's strongest synapses, bar = weight relative to the strongest */
+.bv-wired .bv-link {
+  position: relative;
+}
+.bv-wire {
+  flex: 0 0 56px;
+  height: 6px;
+  margin-left: auto;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--amber) var(--w, 0%), var(--line, rgba(26, 16, 48, 0.1)) var(--w, 0%));
+}
+.bv-firing-btn {
+  margin-top: 6px;
+}
+.bv-firing-btn.on {
+  background: var(--amber);
+}

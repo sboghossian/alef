@@ -1,0 +1,1948 @@
+/* The Alef shell: top bar, sidebars (rails / phone sheets), main view area, prompt box,
+   status bar + data drawer. Bright comic kit tokens from style.css. The main area's insets
+   are CSS vars set by shell.ts (--alef-top/left/right/bottom/prompt); floating surfaces use
+   them so nothing hides under the chrome. */
+
+:root {
+  --alef-bar-h: 54px;
+  --alef-left-w: 268px;
+  --alef-right-w: 330px;
+  --alef-rail-w: 58px;
+  --alef-sb-h: 34px;
+}
+
+body.alef {
+  --alef-top: var(--alef-bar-h);
+  --alef-bottom: var(--alef-sb-h);
+  --alef-left: var(--alef-left-w);
+  --alef-right: var(--alef-right-w);
+  --alef-prompt: 0px;
+  background: var(--sky);
+}
+
+/* ---------------------------------------------------------------- top bar */
+#alef-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--alef-bar-h);
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  background: var(--cream);
+  border-bottom: var(--ch-bw-bold) solid var(--ink);
+  box-shadow: var(--ch-edge-down);
+}
+.alef-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--ink);
+  flex: none;
+}
+.alef-logo-mark {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: var(--ch-bw-bold) solid var(--ink);
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--cream);
+  /* The aleph falls through --display to the system Hebrew face, which sits lighter and
+     smaller on the same em -- so it is sized here, not on the display ramp. */
+  font: 600 24px/1 "Arial Hebrew", "Lucida Grande", var(--display);
+}
+.alef-logo-word {
+  font: 700 19px/1 var(--display);
+  letter-spacing: 0.22em;
+  color: var(--ink);
+}
+
+/* Skip links (shell.ts): off screen until Tab lands on one, then over the logo. */
+.alef-skip {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 60;
+  padding: 8px 14px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r);
+  background: var(--ch-on);
+  color: var(--ch-on-ink);
+  font: 800 var(--fs-body) var(--body);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.alef-skip:focus {
+  transform: none;
+}
+
+/* Three columns: an empty one, the group pills, then the active group's sub-modes. The two
+   outer columns share what is left equally, so the pills sit at the same x on every view
+   however many sub-modes follow them (they used to centre together with the sub-modes and
+   slid sideways from view to view). Below 1100px the bar falls back to one scrolling row. */
+#alef-views {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 4px 2px 6px;
+}
+#alef-views::-webkit-scrollbar {
+  display: none;
+}
+.alef-views-groups {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.alef-views-subs {
+  grid-column: 3;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.alef-view-btn {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  min-width: 40px;
+  padding: 0 9px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r-out);
+  background: var(--paper);
+  color: var(--ink);
+  font: 800 14px var(--body);
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+.alef-view-btn:hover {
+  background: var(--ch-hover);
+  transform: translateY(-1px);
+}
+.alef-view-emoji {
+  font-size: 19px;
+  line-height: 1;
+}
+.alef-view-name {
+  display: none;
+  font: 700 13px var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.alef-view-btn.on {
+  background: var(--ch-on);
+  color: var(--ch-on-ink);
+  box-shadow: var(--ch-sh-md);
+  padding: 0 12px;
+}
+.alef-view-btn.on .alef-view-name {
+  display: inline;
+}
+
+/* Group bar: five named destinations. Names always show -- there is room for five where there
+   was none for fourteen -- and the active group's sub-modes follow after a hairline, so the
+   bar stays exactly one row tall. A lit group pill keeps its padding: if it grew, the
+   centred cluster would grow with it and nudge every pill by half the difference. */
+.alef-group-btn .alef-view-name {
+  display: inline;
+}
+.alef-group-btn,
+.alef-group-btn.on {
+  padding: 0 11px;
+}
+.alef-sub-sep {
+  flex: none;
+  align-self: center;
+  width: 2.5px;
+  height: 22px;
+  margin: 0 3px;
+  border-radius: var(--ch-r-hair);
+  background: var(--ink);
+  opacity: 0.22;
+}
+.alef-sub-btn {
+  flex: none;
+  height: 30px;
+  padding: 0 10px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r-in);
+  background: transparent;
+  /* Muted, not faded: at opacity .6 an unselected sub-mode read as disabled. The selected one
+     takes the shared selected style (chrome.css, .ch-seg). */
+  color: var(--muted);
+  font: 800 12px var(--body);
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: transform 0.08s ease;
+}
+.alef-sub-btn:hover {
+  color: var(--ink);
+  background: var(--ch-hover);
+  transform: translateY(-1px);
+}
+.alef-sheet-btn {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- sidebars */
+.alef-side {
+  position: fixed;
+  top: var(--alef-bar-h);
+  bottom: var(--alef-sb-h);
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  background: var(--cream);
+  color: var(--ink);
+  min-height: 0;
+}
+.alef-side-left {
+  left: 0;
+  width: var(--alef-left-w);
+  border-right: var(--ch-bw-bold) solid var(--ink);
+}
+.alef-side-right {
+  right: 0;
+  width: var(--alef-right-w);
+  border-left: var(--ch-bw-bold) solid var(--ink);
+}
+.alef-side.rail {
+  width: var(--alef-rail-w);
+}
+.alef-side-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 10px 8px 14px;
+  border-bottom: var(--ch-bw) dashed rgba(26, 16, 48, 0.25);
+}
+.alef-side-title {
+  margin: 0;
+  font: 900 15px var(--display);
+  text-transform: uppercase;
+  font-style: italic;
+}
+.alef-collapse {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r-in);
+  background: var(--paper);
+  color: var(--ink);
+  font: 900 16px/1 var(--display);
+  cursor: pointer;
+}
+.alef-collapse:hover {
+  background: var(--ch-hover);
+}
+/* Desktop: the collapse control is a handle on the sidebar's inner edge (frees the header). */
+@media (min-width: 521px) {
+  .alef-side > .alef-side-head .alef-collapse {
+    position: absolute;
+    top: 50%;
+    width: 22px;
+    height: 52px;
+    margin: -26px 0 0;
+    border-radius: 0 var(--ch-r) var(--ch-r) 0;
+    z-index: 2;
+    font-size: 14px;
+    box-shadow: var(--ch-sh-sm);
+  }
+  .alef-side-left > .alef-side-head .alef-collapse {
+    right: -22px;
+    border-left: none;
+  }
+  .alef-side-right > .alef-side-head .alef-collapse {
+    left: -22px;
+    border-right: none;
+    border-radius: var(--ch-r) 0 0 var(--ch-r);
+    box-shadow: var(--ch-sh-sm-flip);
+  }
+}
+.alef-side-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.alef-rail {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+}
+.alef-side.rail .alef-rail {
+  display: flex;
+}
+.alef-side.rail .alef-side-body,
+.alef-side.rail .alef-side-title {
+  display: none;
+}
+.alef-side.rail .alef-side-head {
+  justify-content: center;
+  padding: 10px 0 8px;
+}
+.alef-rail-btn {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r-out);
+  background: var(--paper);
+  font-size: 18px;
+  cursor: pointer;
+}
+.alef-rail-btn:hover {
+  background: var(--ch-hover);
+}
+
+/* badges on tabs / rail buttons */
+.alef-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r);
+  background: var(--pink);
+  color: var(--ink);
+  font: 900 11.5px/16px var(--body);
+  text-align: center;
+}
+.alef-badge.quiet {
+  background: var(--ch-accent);
+}
+
+/* ---------------------------------------------------------------- right sidebar tabs */
+.alef-tabs-head {
+  padding: 8px 8px 0 8px;
+  align-items: flex-end;
+}
+.alef-tabs {
+  flex: 1;
+  display: flex;
+  gap: 3px;
+  min-width: 0;
+}
+.alef-tab {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 5px 2px 6px;
+  border: var(--ch-bw) solid var(--ink);
+  border-bottom: none;
+  border-radius: var(--ch-r) var(--ch-r) 0 0;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+  font: 800 11.5px var(--body);
+  margin-bottom: -2px;
+}
+.alef-tab:hover {
+  background: var(--ch-hover);
+}
+.alef-tab.on {
+  background: var(--ch-on);
+  color: var(--ch-on-ink);
+  z-index: 1;
+}
+.alef-tab-emoji {
+  font-size: 17px;
+  line-height: 1.1;
+}
+.alef-tab-label {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Three labelled tabs (UX-7): every tab shows its icon AND its word, at equal width. */
+.alef-tab {
+  justify-content: center;
+  min-height: 46px;
+}
+/* The ? Help button, at the end of the tab row (Help is an overlay now, not a tab). */
+.alef-help-btn {
+  flex: none;
+  align-self: center;
+  width: 32px;
+  height: 32px;
+  margin: 0 0 6px 4px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 900 var(--fs-body) var(--display);
+  cursor: pointer;
+}
+.alef-help-btn:hover {
+  background: var(--ch-hover);
+}
+.alef-side-right.rail .alef-help-btn {
+  margin: 0;
+}
+.alef-tabs-head .alef-collapse {
+  align-self: center;
+  margin-bottom: 6px;
+}
+.alef-panes {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: var(--ch-bw) solid var(--ink);
+}
+/* One labelled tab's body: its pane switch (Activity: Feed · Logs; Controls: Mac · Routines ·
+   Settings), then the one pane that is open. */
+.alef-rail-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.alef-rail-panel[hidden] {
+  display: none;
+}
+.alef-subtabs {
+  flex: none;
+  display: flex;
+  gap: 2px;
+  margin: 10px 12px 0;
+  padding: 2px;
+  border: var(--ch-bw-hair) solid var(--ink);
+  border-radius: var(--ch-r);
+  background: var(--paper);
+}
+.alef-subtab {
+  flex: 1;
+  min-height: 30px;
+  border: 0;
+  border-radius: var(--ch-r-seg);
+  background: transparent;
+  color: var(--ink);
+  font: 700 var(--fs-min) var(--body);
+  cursor: pointer;
+}
+.alef-subtab:hover {
+  background: var(--ch-hover);
+}
+.alef-pane {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 12px;
+}
+.alef-pane:focus-visible {
+  outline-offset: -3px;
+}
+.alef-pane-h {
+  margin: 4px 0 8px;
+  font: 900 13px var(--display);
+  text-transform: uppercase;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+/* right rail: the tabs stack as icon buttons */
+.alef-side-right.rail .alef-tabs-head {
+  flex-direction: column-reverse;
+  align-items: center;
+  padding: 8px 0;
+  gap: 8px;
+  border-bottom: none;
+}
+.alef-side-right.rail .alef-tabs {
+  flex-direction: column;
+  gap: 8px;
+  flex: none;
+}
+.alef-side-right.rail .alef-tab {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  padding: 0;
+  justify-content: center;
+  border-bottom: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r-out);
+  margin: 0;
+}
+.alef-side-right.rail .alef-tab.on {
+  background: var(--paper);
+}
+.alef-side-right.rail .alef-tab-label,
+.alef-side-right.rail .alef-panes {
+  display: none;
+}
+
+/* inbox pane */
+.alef-inbox {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.alef-inbox button {
+  width: 100%;
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r);
+  background: var(--paper);
+  text-align: left;
+  font: 600 var(--fs-body) var(--body);
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: var(--ch-sh-sm);
+}
+.alef-inbox button:hover {
+  background: var(--ch-hover);
+}
+.alef-inbox .i-city {
+  font: 800 var(--fs-min) var(--body);
+  color: var(--muted);
+}
+.alef-inbox .i-title {
+  font-weight: 900;
+}
+.alef-inbox .i-wait {
+  font: 800 var(--fs-min) var(--body);
+  color: #a3003c;
+}
+/* stranded dispatches (a li card so Attach/Close read as one row's actions, not two more
+   full-width waiting-agent cards — Close is additionally styled .i-btn-danger below) */
+.alef-stranded .i-stranded {
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r);
+  background: var(--paper);
+  box-shadow: var(--ch-sh-sm);
+}
+.alef-stranded .i-stranded-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}
+.alef-stranded .i-stranded-prompt {
+  font: 600 var(--fs-min) var(--body);
+  color: var(--muted);
+}
+/* ?redact=1 (client/src/redact.ts): a stranded launch's prompt is the prompt Alex typed, a
+   session's first prompt, so it is blurred like the Inbox's proposals (president.css). Home's
+   "Needs you now" shows this Inbox on the default first view; home.test.ts renders it for real. */
+body.alef-redact .i-stranded-prompt {
+  filter: blur(5px);
+}
+.alef-stranded .i-stranded-actions {
+  display: flex;
+  gap: 8px;
+}
+.alef-stranded .i-stranded-actions button {
+  width: auto;
+  flex: 1;
+  display: block;
+  box-shadow: none;
+  padding: 6px 10px;
+  text-align: center;
+}
+.alef-stranded .i-stranded-actions button.i-btn-danger {
+  background: var(--pink);
+  color: #fff;
+  border-color: var(--ink);
+}
+.alef-stranded .i-stranded-actions button.i-btn-danger:hover {
+  background: #ff77a8;
+}
+.alef-stranded .i-stranded-actions {
+  flex-wrap: wrap;
+}
+.alef-stranded .i-stranded-actions button.i-btn-primary {
+  flex-basis: 100%;
+  background: var(--ch-accent);
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.alef-stranded .i-stranded-actions button:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+/* the Health keeper's item for the day (features/inbox.ts renderHealthSection) */
+.alef-health .i-health-issues {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 4px;
+  font: 600 var(--fs-min) var(--body);
+}
+.alef-pane .i-empty {
+  padding: 16px;
+  border: var(--ch-bw) dashed var(--ink);
+  border-radius: var(--ch-r-pane);
+  text-align: center;
+  font-size: var(--fs-body);
+}
+
+/* settings pane (the old More menu) */
+.alef-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.alef-settings .ui-btn-menu {
+  min-height: 42px;
+  border: var(--ch-bw) solid var(--ink);
+  background: var(--paper);
+  box-shadow: var(--ch-sh-sm);
+}
+.alef-settings .ui-btn-menu:hover {
+  background: var(--ch-hover);
+}
+.alef-settings .ui-btn-menu.active {
+  background: var(--ch-on);
+  color: var(--ch-on-ink);
+}
+
+/* ? Help overlay (shell.ts openHelp): the legend, every view and every shortcut, over everything */
+.alef-help-card {
+  width: min(720px, 100%);
+}
+.alef-help-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.alef-help-head h2 {
+  margin: 0;
+  font-family: var(--display);
+}
+.alef-help-close {
+  width: 32px;
+  height: 32px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  cursor: pointer;
+}
+.alef-help-close:hover {
+  background: var(--ch-hover);
+}
+.alef-help-body .help-sec {
+  margin-bottom: 14px;
+}
+.alef-help-body .help-keys {
+  width: 100%;
+  font-size: var(--fs-body);
+}
+.alef-help-views ul {
+  list-style: none;
+  margin: 0 0 14px;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  font-size: var(--fs-body);
+}
+.alef-help-views h4.help-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 900 12px var(--display);
+  text-transform: uppercase;
+  font-style: italic;
+  margin: 10px 0 6px;
+  opacity: 0.75;
+}
+.alef-help-views h3,
+.alef-help-body h3 {
+  font: 900 13px var(--display);
+  text-transform: uppercase;
+  font-style: italic;
+  margin: 4px 0 8px;
+}
+
+/* ---------------------------------------------------------------- feed */
+.alef-feed-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+.alef-feed-chips .alef-fchip {
+  min-height: 30px;
+  padding: 0 8px;
+  font-size: var(--fs-min);
+}
+.alef-feed-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+/* A neutral card; its kind is a stripe down the left edge (feed-ui.css sets --k per kind), not a
+   pastel fill, so the rail stays quieter than the world it sits beside. */
+.alef-feed-item {
+  border: var(--ch-bw-hair) solid var(--ch-seam-deep);
+  border-left: var(--ch-stripe) solid var(--k, var(--ch-seam-deep));
+  border-radius: var(--ch-r-out);
+  background: var(--paper);
+  overflow: hidden;
+}
+.alef-feed-item.open {
+  border-color: var(--ink);
+  border-left-color: var(--k, var(--ink));
+  box-shadow: var(--ch-sh-md);
+}
+.alef-feed-main {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 7px 9px;
+  border: none;
+  background: none;
+  text-align: left;
+  color: var(--ink);
+  font: 600 var(--fs-body) var(--body);
+  cursor: pointer;
+}
+.alef-feed-main:disabled {
+  cursor: default;
+}
+.alef-feed-main:not(:disabled):hover {
+  background: var(--ch-hover);
+}
+.alef-feed-emoji {
+  flex: none;
+  font-size: 15px;
+  line-height: 1.3;
+}
+.alef-feed-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+.alef-feed-title {
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+.alef-feed-detail {
+  color: var(--muted);
+  font-size: var(--fs-min);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.alef-feed-when {
+  flex: none;
+  color: var(--muted);
+  font: 700 var(--fs-min) var(--body);
+  white-space: nowrap;
+}
+.alef-feed-outcome {
+  display: inline-block;
+  margin: 0 9px 7px 32px;
+  padding: 0 7px;
+  border: var(--ch-bw-hair) solid var(--ink);
+  border-radius: var(--ch-r-tag);
+  font: 800 var(--fs-min) var(--body);
+  background: var(--cream);
+}
+.alef-feed-outcome.o-allow {
+  background: #b9f5c9;
+}
+.alef-feed-outcome.o-deny {
+  background: #ffc2d3;
+}
+.alef-feed-link {
+  display: inline-block;
+  margin: 0 9px 7px 32px;
+  font: 800 var(--fs-min) var(--body);
+  color: var(--sky);
+}
+.alef-feed-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 9px 9px 32px;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+.alef-feed-actions.armed {
+  opacity: 1;
+}
+.alef-feed-actions.nudge {
+  animation: alef-nudge 0.3s;
+}
+@keyframes alef-nudge {
+  25% { transform: translateX(-3px); }
+  75% { transform: translateX(3px); }
+}
+.alef-hold {
+  --p: 0;
+  position: relative;
+  overflow: hidden;
+  min-height: 34px;
+  padding: 0 10px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r-in);
+  background: var(--paper);
+  color: var(--ink);
+  font: 900 var(--fs-min) var(--body);
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+.alef-hold-fill {
+  position: absolute;
+  inset: 0;
+  transform-origin: left center;
+  transform: scaleX(var(--p));
+}
+.alef-hold.ap-yes .alef-hold-fill {
+  background: #6fd23f;
+}
+.alef-hold.ap-no .alef-hold-fill {
+  background: var(--pink);
+}
+.alef-hold-label {
+  position: relative;
+}
+.alef-hold.holding {
+  box-shadow: var(--ch-sh-ring);
+}
+.alef-feed-timer {
+  margin-left: auto;
+  font: 900 var(--fs-min) var(--body);
+}
+.alef-feed-timer.urgent {
+  color: #c4003f;
+}
+.alef-feed-empty {
+  padding: 16px;
+  border: var(--ch-bw) dashed var(--ink);
+  border-radius: var(--ch-r-pane);
+  font-size: var(--fs-body);
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------- main view area */
+#alef-view {
+  position: fixed;
+  top: var(--alef-top);
+  left: var(--alef-left);
+  right: var(--alef-right);
+  bottom: var(--alef-bottom);
+  z-index: 7;
+  pointer-events: none;
+  outline: none;
+}
+#alef-view > * {
+  pointer-events: auto;
+}
+body.alef-no-planet #alef-view {
+  bottom: calc(var(--alef-bottom) + var(--alef-prompt));
+  pointer-events: auto;
+  overflow: auto;
+  background-color: var(--cream);
+  background-image: radial-gradient(rgba(26, 16, 48, 0.1) 1.3px, transparent 1.4px);
+  background-size: 22px 22px;
+  z-index: 9;
+}
+body.alef-no-planet #app {
+  visibility: hidden;
+}
+body.alef.alef-no-planet {
+  background: var(--cream);
+}
+body.alef-no-planet #labels,
+body.alef-no-planet #overlays,
+body.alef-no-planet #zaps,
+body.alef-no-planet #bubble,
+body.alef-no-planet #fx-layer,
+body.alef-no-planet #compass-box,
+body.alef-no-planet #exploring,
+body.alef-no-planet #city-card,
+body.alef-no-planet .sky-body,
+body.alef-no-planet .aw-pill[data-surface="compass"] {
+  display: none !important;
+}
+/* No WebGL, or its context is lost (ui/no-3d.ts): the same planet-pinned overlays go, plus the
+   canvas itself (everything in #app but the banner), the District view's house labels, the focus
+   dim and the fps chip (nothing is drawn, so there is no frame rate to show). */
+body.alef-no-3d #app > :not(#alef-no3d),
+body.alef-no-3d #labels,
+body.alef-no-3d #overlays,
+body.alef-no-3d #zaps,
+body.alef-no-3d #bubble,
+body.alef-no-3d #fx-layer,
+body.alef-no-3d #compass-box,
+body.alef-no-3d #exploring,
+body.alef-no-3d #city-card,
+body.alef-no-3d .sky-body,
+body.alef-no-3d .aw-pill[data-surface="compass"],
+body.alef-no-3d .ds-labels,
+body.alef-no-3d #focus-dim,
+body.alef-no-3d #sb-fps {
+  display: none !important;
+}
+
+.alef-card {
+  position: relative;
+  max-width: 560px;
+  margin: 48px auto;
+  padding: 22px 24px 20px;
+  background: var(--paper);
+  border: var(--ch-bw-bold) solid var(--ink);
+  border-radius: var(--ch-r-card);
+  box-shadow: var(--ch-sh-xl);
+  font-size: 14px;
+}
+.alef-card h2 {
+  margin: 4px 0 8px;
+  font: 900 22px var(--display);
+  font-style: italic;
+  text-transform: uppercase;
+}
+.alef-burst {
+  position: absolute;
+  top: -18px;
+  right: 18px;
+  padding: 4px 12px;
+  background: var(--ch-soft);
+  border: var(--ch-bw-bold) solid var(--ink);
+  border-radius: var(--ch-r-pane);
+  font: 700 17px var(--display);
+  letter-spacing: 0.06em;
+  box-shadow: var(--ch-sh-md);
+}
+.alef-soon-emoji {
+  font-size: 52px;
+  line-height: 1;
+}
+.alef-soon-hint {
+  color: var(--muted);
+  font-weight: 700;
+}
+.alef-soon ul {
+  padding-left: 20px;
+}
+.alef-soon-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.alef-room-pick {
+  margin-top: 24px;
+}
+.alef-room-pick ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.alef-room-pick button {
+  width: 100%;
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r);
+  background: var(--cream);
+  text-align: left;
+  cursor: pointer;
+  font: 600 var(--fs-body) var(--body);
+}
+.alef-room-pick button:hover {
+  background: var(--ch-hover);
+}
+
+/* Board view (was a modal) */
+.board-view {
+  padding: 16px 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 100%;
+}
+.board-view #board-cols {
+  flex: 1;
+  max-height: none;
+  padding: 0;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  align-items: start;
+}
+.board-view #board-cols button.b-sel {
+  background: var(--ch-on);
+  color: var(--ch-on-ink);
+  box-shadow: var(--ch-sh-md);
+}
+/* The card's meta line is --muted, which is 3.11:1 on the ink of a selected card. */
+.board-view #board-cols button.b-sel .b-meta {
+  color: var(--ch-on-ink);
+}
+.board-view.board-focus .b-today,
+.board-view.board-focus .b-sleeping,
+.view-board.board-focus .b-today,
+.view-board.board-focus .b-sleeping,
+.view-board.board-focus .board-view-head .view-head-sub {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- prompt box */
+/* Docked: a full-width bar between the sidebars, right above the status bar (and its drawer).
+   shell.ts counts its height into --alef-bottom, so the main area ends above it. */
+#alef-prompt {
+  position: fixed;
+  left: var(--alef-left);
+  right: var(--alef-right);
+  bottom: var(--alef-status, var(--alef-sb-h));
+  z-index: 22;
+  padding: 8px 12px;
+  background: var(--cream);
+  border-top: var(--ch-bw-bold) solid var(--ink);
+}
+#alef-prompt #dispatch {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  translate: none;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 5px 6px 5px 6px;
+  border-width: 2.5px;
+  border-radius: var(--ch-r-field);
+  box-shadow: var(--ch-sh-md);
+  background: var(--paper);
+}
+/* The text field draws no outline of its own (style.css #dispatch-text), so the box shows focus
+   the way the left search does: its shadow turns hot while anything inside has focus. */
+#alef-prompt #dispatch:focus-within {
+  box-shadow: var(--ch-sh-md-hot);
+}
+#alef-prompt #dispatch-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+#alef-prompt .dispatch-row {
+  display: contents;
+}
+#alef-prompt #dispatch-text {
+  order: 0;
+  flex: 1;
+  min-width: 0;
+  height: 30px;
+  padding: 5px 4px 0;
+  font-size: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+#alef-prompt .qp-auto-btn {
+  order: -1;
+}
+#alef-prompt .dispatch-city-label,
+#alef-prompt #dispatch-voice,
+#alef-prompt #dispatch-send {
+  order: 1;
+  flex: none;
+}
+#alef-prompt .dispatch-hint {
+  display: none;
+}
+#alef-prompt #dispatch-status {
+  position: absolute;
+  left: 12px;
+  bottom: calc(100% + 6px);
+  max-width: calc(100% - 24px);
+  margin: 0;
+  padding: 4px 10px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r);
+  background: var(--paper);
+  box-shadow: var(--ch-sh-sm);
+}
+#alef-prompt #dispatch-status:empty {
+  display: none;
+}
+/* A view showed the prompt box inside itself (ViewContext.promptBox, the 🏠 Home view): the
+   docked bar is empty, so it goes, and --alef-bottom shrinks to the status bar. */
+body.alef-prompt-inline #alef-prompt {
+  display: none;
+}
+.qp-auto-btn {
+  font-weight: 900;
+  background: var(--ch-soft);
+}
+.qp-auto-card {
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100vh - 80px);
+  overflow: auto;
+}
+.qp-auto-sub {
+  margin: 0 0 10px;
+  color: var(--muted);
+  font-weight: 700;
+}
+.qp-auto-h {
+  margin: 14px 0 6px;
+  font: 900 13px var(--display);
+  text-transform: uppercase;
+  font-style: italic;
+}
+.qp-auto-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.qp-auto-list button,
+.qp-auto-item {
+  width: 100%;
+  display: grid;
+  gap: 2px;
+  padding: 8px 10px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r);
+  background: var(--paper);
+  text-align: left;
+  font: 600 var(--fs-body) var(--body);
+  color: var(--ink);
+}
+.qp-auto-list button {
+  cursor: pointer;
+  box-shadow: var(--ch-sh-sm);
+}
+.qp-auto-list button:hover {
+  background: var(--ch-hover);
+}
+.qp-auto-list span,
+.qp-auto-item span {
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+
+/* ---------------------------------------------------------------- bottom: status bar + drawer */
+#alef-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 28;
+  display: flex;
+  flex-direction: column;
+}
+#alef-bottom #statusbar {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  height: var(--alef-sb-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 10px 0 14px;
+}
+.sb-readouts,
+.sb-tools {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.sb-readouts {
+  overflow: hidden;
+}
+.sb-tools {
+  flex: none;
+  gap: 8px;
+}
+.sb-more {
+  border: var(--ch-bw) solid var(--ink) !important;
+  background: var(--paper) !important;
+}
+.sb-more[aria-expanded="true"] {
+  background: var(--ch-on) !important;
+  color: var(--ch-on-ink);
+}
+/* A drawer chip is in alarm (low battery, "N sick"): a small badge-pink dot on "more" (statusbar.ts). */
+.sb-more {
+  position: relative;
+}
+.sb-more.sb-alert::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 9px;
+  height: 9px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: 50%;
+  background: var(--pink);
+}
+.sb-spark {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  vertical-align: -1px;
+  color: var(--muted);
+}
+.sb-spark-svg.hot,
+.sb-spark-svg {
+  display: block;
+}
+.alef-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 60vh;
+  overflow: auto;
+  padding: 12px 16px 14px;
+  background: var(--cream);
+  border-top: var(--ch-bw-bold) solid var(--ink);
+  box-shadow: var(--ch-edge-up);
+  font-size: var(--fs-body);
+}
+.alef-drawer[hidden] {
+  display: none;
+}
+/* The drawer's top tray (statusbar.ts): every readout and chip that left the bar (UX-8). Words
+   stay on here whatever the width, since the tray wraps instead of clipping. */
+.alef-drawer-tray {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+}
+.alef-drawer-tray .sb-word {
+  display: inline;
+}
+.alef-drawer-tray #sb-chips {
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+#sb-keep {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.alef-drawer-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px 18px;
+}
+.alef-drawer h3,
+.alef-drawer-sections h3 {
+  margin: 0 0 6px;
+  font: 900 12.5px var(--display);
+  text-transform: uppercase;
+  font-style: italic;
+}
+
+/* ---- metrics dock: the drawer's chart panel (Round 9) ---- */
+.mchart-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.mchart-panel-head h3 {
+  margin: 0;
+  font: 900 12.5px var(--display);
+  text-transform: uppercase;
+  font-style: italic;
+}
+.mchart-range {
+  display: flex;
+  gap: 4px;
+}
+.mchart-range button {
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r-chip);
+  background: var(--paper);
+  padding: 2px 8px;
+  font: 800 11px var(--body);
+  cursor: pointer;
+}
+.mchart-range button.on {
+  background: var(--ch-on);
+  color: var(--ch-on-ink);
+}
+.mchart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px 12px;
+}
+.mchart-none {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+.mchart-card {
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r-pane);
+  background: var(--paper);
+  padding: 8px 9px 6px;
+}
+.mchart-head {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin-bottom: 3px;
+}
+.mchart-ico {
+  font-size: 12px;
+}
+.mchart-label {
+  flex: 1;
+  min-width: 0;
+  color: var(--muted);
+  font-weight: 800;
+  font-size: var(--fs-min);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mchart-value {
+  font-weight: 900;
+  font-size: 13px;
+}
+.mchart-svg-wrap {
+  position: relative;
+}
+.mchart-svg {
+  display: block;
+  width: 100%;
+  height: 42px;
+  color: var(--mchart-color, var(--sky));
+  overflow: visible;
+}
+.mchart-area {
+  fill: currentColor;
+  opacity: 0.22;
+  stroke: none;
+}
+.mchart-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.mchart-bar {
+  fill: currentColor;
+  opacity: 0.75;
+}
+.mchart-hover[hidden] {
+  display: none;
+}
+.mchart-hover line {
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+.mchart-hover circle {
+  fill: currentColor;
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+.mchart-tip {
+  position: absolute;
+  top: -4px;
+  transform: translateY(-100%);
+  background: var(--ink);
+  color: var(--paper);
+  border-radius: var(--ch-r-tag);
+  padding: 2px 6px;
+  font: 800 10.5px var(--body);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+}
+.alef-drawer dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 10px;
+}
+.alef-drawer dt {
+  color: var(--muted);
+  font-weight: 700;
+}
+.alef-drawer dd {
+  margin: 0;
+  font-weight: 900;
+  text-align: right;
+}
+.sb-top {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 2px;
+}
+.sb-top button,
+.sb-latest button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 3px 6px;
+  border: none;
+  border-radius: var(--ch-r-chip);
+  background: none;
+  font: 700 var(--fs-body) var(--body);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.sb-latest button {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+}
+.sb-top button:hover,
+.sb-latest button:hover {
+  background: var(--ch-hover);
+}
+.sb-top-n,
+.sb-none {
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+.sb-latest {
+  grid-column: span 2;
+}
+
+/* ---------------------------------------------------------------- floating surfaces follow the main area */
+/* The ONE contextual details panel: a sidebar docked to the main area's right edge, full height,
+   opened by a click on an element, closed by its ✕, Esc or a view switch. */
+body.alef #panel {
+  top: var(--alef-top);
+  right: var(--alef-right);
+  bottom: var(--alef-bottom);
+  width: min(360px, calc(100vw - var(--alef-left) - var(--alef-right)));
+  max-height: none;
+  z-index: 24;
+  border: none;
+  border-left: var(--ch-bw-bold) solid var(--ink);
+  border-radius: 0;
+  box-shadow: var(--ch-edge-left);
+}
+body.alef #compass-box {
+  right: calc(var(--alef-right) + 14px);
+  bottom: calc(var(--alef-bottom) + 12px);
+}
+/* The "Now exploring" card floated over the planet; the district's sidebar row and the details
+   panel (click a city) carry the same numbers, so it no longer shows. */
+body.alef #exploring {
+  display: none !important;
+}
+body.alef .replay-badge {
+  top: calc(var(--alef-top) + 10px);
+  left: calc(var(--alef-left) + (100vw - var(--alef-left) - var(--alef-right)) / 2);
+}
+body.alef #room-hud {
+  top: calc(var(--alef-top) + 14px);
+  left: calc(var(--alef-left) + 14px);
+}
+body.alef .aw-dock-tr {
+  top: calc(var(--alef-top) + 10px);
+  right: calc(var(--alef-right) + 12px);
+}
+body.alef .aw-dock-tc {
+  top: calc(var(--alef-top) + 10px);
+  left: calc(var(--alef-left) + (100vw - var(--alef-left) - var(--alef-right)) / 2);
+}
+body.alef .aw-dock-bl {
+  left: calc(var(--alef-left) + 14px);
+}
+body.alef .aw-dock-br {
+  right: calc(var(--alef-right) + 14px);
+}
+body.alef .aw-dock-bc {
+  left: calc(var(--alef-left) + (100vw - var(--alef-left) - var(--alef-right)) / 2);
+}
+body.alef .ap-card {
+  left: calc(var(--alef-left) + (100vw - var(--alef-left) - var(--alef-right)) / 2);
+  bottom: calc(var(--alef-bottom) + var(--alef-prompt) + 16px);
+  max-height: calc(100vh - var(--alef-top) - var(--alef-bottom) - var(--alef-prompt) - 32px);
+}
+/* Agent focus (F): its card is that mode's one contextual panel, docked the same way. */
+body.alef .focus-card {
+  top: var(--alef-top);
+  right: var(--alef-right);
+  bottom: var(--alef-bottom);
+  max-height: none;
+  width: min(370px, 100vw);
+  border: none;
+  border-left: var(--ch-bw-bold) solid var(--ink);
+  border-radius: 0;
+  box-shadow: var(--ch-edge-left);
+}
+/* Fleet overlays (todos, approvals beacons, conflict beams…) are placed in window pixels; clip
+   them to the main view area so nothing paints over the chrome. clip-path keeps the coordinates; in H / focus / zen the
+   insets drop to 0 on their own. */
+body.alef #fx-layer {
+  clip-path: inset(var(--alef-top) var(--alef-right) var(--alef-bottom) var(--alef-left));
+}
+/* canvas (features/canvas) lives inside the main area */
+body.alef .cv-root {
+  top: var(--alef-top) !important;
+  left: var(--alef-left) !important;
+  right: var(--alef-right) !important;
+  bottom: calc(var(--alef-bottom) + var(--alef-prompt)) !important;
+  inset: auto;
+}
+body.alef.panel-open .cv-minimap {
+  right: calc(var(--alef-right) + 368px);
+}
+body.alef .cv-minimap {
+  right: calc(var(--alef-right) + 14px);
+  bottom: calc(var(--alef-bottom) + var(--alef-prompt) + 12px);
+}
+body.alef .cv-list {
+  top: var(--alef-top);
+  left: var(--alef-left);
+  right: var(--alef-right);
+  bottom: var(--alef-bottom);
+  inset: auto;
+}
+
+/* ---------------------------------------------------------------- H / focus / zen */
+/* H folds the two side rails only (UX-12): the top bar, and with it the five destinations,
+   stays, and so do the prompt box and the status bar. F and Z hide everything. */
+body.aw-chrome-hidden #alef-left,
+body.aw-chrome-hidden #alef-right,
+body.aw-focus #alef-top,
+body.aw-focus #alef-left,
+body.aw-focus #alef-right,
+body.aw-focus #alef-bottom,
+body.aw-focus #alef-prompt,
+body.aw-zen #alef-top,
+body.aw-zen #alef-left,
+body.aw-zen #alef-right,
+body.aw-zen #alef-bottom,
+body.aw-zen #alef-prompt {
+  display: none;
+}
+.alef-float-pill {
+  position: fixed;
+  top: 10px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: 999px;
+  background: var(--ch-soft);
+  color: var(--ink);
+  font: 800 var(--fs-body) var(--body);
+  box-shadow: var(--ch-sh-md);
+  cursor: pointer;
+}
+#alef-hidden-pill {
+  top: calc(var(--alef-top) + 10px);
+  left: 14px;
+  translate: none;
+  background: var(--cream);
+}
+
+/* A view with no filters has no left sidebar (UX-11, shell.ts applyLeftEmpty); ⌘K brings the
+   search back. Desktop only: on a phone the sidebar is a sheet. */
+body.alef-left-empty:not(.alef-phone) #alef-left {
+  display: none;
+}
+
+/* ---------------------------------------------------------------- one empty / error state
+   (shell/view-state.ts, UX-11): centred in the view, a title, a line, one action. */
+.alef-state {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 8px;
+  min-height: 40vh;
+  padding: 24px;
+  text-align: center;
+  color: var(--ink);
+  font-size: var(--fs-body);
+}
+.alef-state[hidden] {
+  display: none;
+}
+.alef-state-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  min-height: 0;
+  pointer-events: none;
+}
+.alef-state-overlay > * {
+  pointer-events: auto;
+}
+.alef-state-title {
+  margin: 0;
+  font: 800 var(--fs-body) var(--display);
+}
+.alef-state-detail {
+  margin: 0;
+  max-width: 52ch;
+  opacity: 0.75;
+}
+.alef-state-error .alef-state-title::before {
+  content: "⚠ ";
+}
+.alef-state-action {
+  min-height: 34px;
+  padding: 0 16px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: 999px;
+  background: var(--ch-accent);
+  color: var(--ink);
+  font: 800 var(--fs-body) var(--body);
+  box-shadow: var(--ch-sh-sm);
+  cursor: pointer;
+}
+.alef-state-action:hover {
+  background: var(--ch-soft);
+}
+#alef-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 24;
+  background: rgba(26, 16, 48, 0.28);
+}
+
+/* ---------------------------------------------------------------- fixes after the first screenshots */
+.alef-tab {
+  padding: 5px 0 6px;
+  letter-spacing: -0.01em;
+}
+@media (max-width: 1440px) {
+  .sb-readouts {
+    gap: 10px;
+  }
+  .sb-wide .sb-word {
+    display: none;
+  }
+}
+
+/* ---------------------------------------------------------------- mid widths */
+@media (max-width: 1100px) and (min-width: 521px) {
+  .sb-wide {
+    display: none;
+  }
+  .alef-logo-word {
+    display: none;
+  }
+  /* Five group names plus the widest group's sub-modes need ~860px of bar; below that the row
+     clipped under the logo. Fall back to the bar's own idiom -- only the active one is named --
+     which the base `.alef-view-btn.on .alef-view-name` rule re-shows on its own specificity. */
+  .alef-group-btn .alef-view-name {
+    display: none;
+  }
+  .alef-group-btn {
+    padding: 0 9px;
+  }
+  .alef-group-btn.on {
+    padding: 0 12px;
+  }
+  /* Too narrow for the fixed columns: one row again, scrolling sideways when it must. */
+  #alef-views {
+    display: flex;
+    justify-content: center;
+  }
+  .alef-views-groups,
+  .alef-views-subs {
+    display: contents;
+  }
+}
+
+/* ---------------------------------------------------------------- phone */
+@media (max-width: 520px) {
+  :root {
+    --alef-bar-h: 50px;
+    --alef-sb-h: 36px;
+  }
+  #alef-top {
+    gap: 6px;
+    padding: 0 6px;
+  }
+  .alef-logo-word {
+    display: none;
+  }
+  .alef-logo-mark {
+    width: 32px;
+    height: 32px;
+    font-size: 17px;
+  }
+  #alef-views {
+    justify-content: flex-start;
+    gap: 4px;
+  }
+  .alef-view-btn,
+  .alef-view-btn.on {
+    min-width: 38px;
+    height: 38px;
+    padding: 0 7px;
+  }
+  .alef-view-btn.on .alef-view-name,
+  .alef-group-btn .alef-view-name {
+    display: none;
+  }
+  .alef-sub-sep {
+    display: none;
+  }
+  .alef-sub-btn {
+    height: 34px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+  .alef-sheet-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border: var(--ch-bw) solid var(--ink);
+    border-radius: var(--ch-r-out);
+    background: var(--paper);
+    font-size: 18px;
+    cursor: pointer;
+  }
+  .alef-sheet-btn[aria-expanded="true"] {
+    background: var(--ch-on);
+    color: var(--ch-on-ink);
+  }
+  /* sidebars become bottom sheets */
+  .alef-side,
+  .alef-side.rail {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: var(--alef-sb-h);
+    width: auto;
+    height: min(74vh, 620px);
+    border: none;
+    border-top: var(--ch-bw-bold) solid var(--ink);
+    border-radius: var(--ch-r-sheet) var(--ch-r-sheet) 0 0;
+    box-shadow: var(--ch-edge-up-lift);
+    transform: translateY(calc(100% + 60px));
+    transition: transform 0.18s ease;
+    z-index: 27;
+  }
+  .alef-side.sheet-open {
+    transform: none;
+  }
+  .alef-side.rail .alef-rail,
+  .alef-side.rail .alef-side-title {
+    display: none;
+  }
+  .alef-side.rail .alef-side-body {
+    display: flex;
+  }
+  .alef-side-right.rail .alef-panes {
+    display: flex;
+  }
+  .alef-side-right.rail .alef-tabs-head {
+    flex-direction: row;
+    align-items: flex-end;
+    padding: 8px 8px 0;
+  }
+  .alef-side-right.rail .alef-tabs {
+    flex-direction: row;
+    flex: 1;
+  }
+  .alef-side-right.rail .alef-tab {
+    width: auto;
+    height: auto;
+    flex: 1;
+    padding: 5px 2px 6px;
+    border-bottom: none;
+    border-radius: var(--ch-r) var(--ch-r) 0 0;
+    margin-bottom: -2px;
+  }
+  .alef-side-right.rail .alef-tab.on {
+    background: var(--ch-on);
+    color: var(--ch-on-ink);
+  }
+  .alef-side-right.rail .alef-tab-label {
+    display: block;
+  }
+  #alef-prompt {
+    left: 0;
+    right: 0;
+    padding: 6px 8px;
+  }
+  #alef-prompt #dispatch-form {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  #alef-prompt #dispatch-text {
+    order: -2;
+    flex: 1 0 100%;
+  }
+  #alef-prompt .dispatch-city-label {
+    flex: 1;
+    min-width: 0;
+  }
+  #alef-prompt #dispatch-city {
+    width: 100%;
+    max-width: none;
+  }
+  #compass-box {
+    right: 10px;
+    bottom: calc(var(--alef-bottom) + var(--alef-prompt) + 16px);
+    width: 84px;
+    height: 84px;
+  }
+  .sb-wide,
+  .sb-word,
+  .sb-spark,
+  #sb-fps {
+    display: none;
+  }
+  .sb-readouts {
+    gap: 10px;
+  }
+  #alef-bottom #statusbar {
+    padding: 0 6px 0 8px;
+  }
+  .alef-drawer-sections {
+    grid-template-columns: 1fr 1fr;
+  }
+  .mchart-grid {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  .sb-latest {
+    grid-column: 1 / -1;
+  }
+  body.alef #panel,
+  body.alef .focus-card {
+    top: 28vh;
+    left: 0;
+    right: 0;
+    width: auto;
+    border-left: none;
+    border-top: var(--ch-bw-bold) solid var(--ink);
+    border-radius: var(--ch-r-sheet) var(--ch-r-sheet) 0 0;
+    box-shadow: var(--ch-edge-up-lift);
+  }
+  .alef-card {
+    margin: 20px 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alef-side,
+  .alef-view-btn,
+  .alef-sub-btn,
+  .alef-caret {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------- the inverted state
+   A selected control fills with ink (--ch-on). The hard offset shadow is drawn in ink too, so
+   on these -- and only on these -- it stops reading as a lift and becomes a 3px smear that
+   squares off the two corners it falls on. The inversion is the lift here, so the shadow goes.
+   Every other raised surface keeps it: that offset is the frame's signature, and it only
+   breaks where the shadow's colour and the fill's colour are the same one.
+   Listed rather than folded into each rule so the reason lives in one place. */
+.alef-view-btn.on,
+.board-view #board-cols button.b-sel,
+.alef-settings .ui-btn-menu.active {
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------- the chrome's icons
+   One 24-grid drawn in currentColor (shell/icons.ts), so an icon is whatever colour the
+   control holding it is -- which is what lets a selected pill invert to ink and take its icon
+   with it. The emoji-named spans stay: they are the slot, and a view with no icon of ours
+   still drops its emoji into exactly the same place. */
+.alef-ico {
+  display: block;
+  flex: none;
+}
+.alef-view-emoji,
+.alef-tab-emoji,
+.alef-rail-btn > [aria-hidden],
+.alef-sheet-btn > [aria-hidden]:first-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.alef-float-pill .alef-ico {
+  display: inline-block;
+  vertical-align: -3px;
+}
+.help-group .alef-ico,
+.alef-help-body li > [aria-hidden] .alef-ico,
+.alef-fchip .alef-ico,
+.alef-feed-top-title .alef-ico,
+.alef-feed-top-empty .alef-ico,
+.qp-auto-btn .alef-ico,
+#hud-f-completeness-chip .alef-ico {
+  display: inline-block;
+  vertical-align: -3px;
+}
+/* A row's kind icon is quiet by default and takes a text-safe tone where the kind is urgent;
+   the stripe down the row's edge (feed-ui.css) already carries the kind's fill colour. */
+.alef-feed-emoji,
+.home-feed-emoji {
+  color: var(--muted);
+}
+.alef-feed-item.k-approval .alef-feed-emoji,
+.alef-feed-top-item.u-failure .alef-feed-emoji {
+  color: var(--pink-text);
+}
+.alef-feed-item.k-tripwire .alef-feed-emoji,
+.alef-feed-top-item.u-tripwire .alef-feed-emoji {
+  color: var(--sky);
+}

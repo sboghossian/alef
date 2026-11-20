@@ -1,0 +1,366 @@
+/* Round 5 G1c: the canvas view. Bright comic style: cream paper, thick ink borders, hard
+   offset shadows, the tokens from style.css. Everything is scoped to .cv-* / #aw-canvas. */
+.cv-root {
+  --cv-hook: var(--warn);
+  --cv-brain: var(--pink);
+  --cv-plan: var(--cyan);
+  --cv-reason: var(--violet);
+  --cv-tool: var(--yellow);
+  position: fixed;
+  inset: 0;
+  z-index: 9;
+  background-color: var(--cream);
+  background-image: radial-gradient(rgba(26, 16, 48, 0.13) 1.3px, transparent 1.4px);
+  background-size: 22px 22px;
+  overflow: hidden;
+}
+/* The planet's floating overlays belong to the planet. */
+body.aw-canvas-open #labels,
+body.aw-canvas-open #zaps,
+body.aw-canvas-open #overlays,
+body.aw-canvas-open #bubble,
+body.aw-canvas-open #fx-layer,
+body.aw-canvas-open #captions,
+body.aw-canvas-open #compass,
+body.aw-canvas-open #compass-box,
+body.aw-canvas-open #city-card,
+body.aw-canvas-open #districts,
+body.aw-canvas-open #exploring,
+body.aw-canvas-open #ticker,
+body.aw-canvas-open .sky-body {
+  display: none !important;
+}
+
+.cv-viewport {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  touch-action: none;
+  outline: none;
+}
+.cv-viewport.cv-panning { cursor: grabbing; }
+.cv-world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+.cv-bands, .cv-cards { position: absolute; left: 0; top: 0; }
+.cv-edges { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* ---- lanes ---- */
+.cv-lane-head {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 6px 10px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: var(--ch-sh-md);
+}
+.cv-lane-title { font: 900 var(--fs-md) var(--display); text-transform: uppercase; font-style: italic; display: flex; justify-content: space-between; gap: 8px; }
+.cv-lane-count { font: 800 var(--fs-sm) var(--body); font-style: normal; background: var(--yellow); border: 2px solid var(--ink); border-radius: 999px; padding: 0 7px; }
+.cv-lane-hint { font: 600 var(--fs-sm) var(--body); color: var(--muted); margin-top: 1px; }
+.cv-rail-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font: 900 var(--fs-sm) var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sky);
+}
+.cv-group {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--sky);
+  color: var(--paper);
+  font: 800 var(--fs-sm) var(--body);
+  cursor: pointer;
+  text-align: left;
+}
+.cv-group-live { background: var(--pink); }
+.cv-group-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cv-group-count { font-weight: 900; }
+
+/* ---- cards ---- */
+.cv-card {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 5px 9px 5px 13px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: var(--ch-sh-md);
+  color: var(--ink);
+  cursor: pointer;
+  overflow: hidden;
+  transition: box-shadow 0.12s, opacity 0.12s;
+}
+.cv-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: var(--cv-stripe, var(--muted));
+}
+.cv-k-session { --cv-stripe: var(--pink); }
+/* hook/skill/mcp/subagent stripes come from shared/stations.ts (canvas.ts sets --cv-stripe inline
+   per card: a per-server tint for mcp, the station colour for the other three). */
+.cv-k-subagent { background: var(--sky-wash); }
+.cv-k-brain { --cv-stripe: var(--cv-brain); }
+.cv-k-model { --cv-stripe: var(--cv-reason); }
+.cv-k-router { --cv-stripe: var(--yellow); background: var(--yellow-wash); }
+.cv-k-tier { --cv-stripe: var(--cv-reason); background: var(--sky-wash); }
+.cv-k-file, .cv-k-repo { --cv-stripe: var(--sky); }
+.cv-k-jev { --cv-stripe: var(--yellow); background: var(--yellow-wash); }
+.cv-k-approval { --cv-stripe: var(--bad); background: var(--pink-wash); }
+.cv-k-routine { --cv-stripe: var(--muted); }
+.cv-card.cv-live { box-shadow: var(--ch-sh-md), 0 0 0 3px var(--yellow); }
+.cv-card.cv-s-awaiting { box-shadow: var(--ch-sh-md), 0 0 0 3px var(--pink); }
+.cv-card.cv-s-failed { background: var(--pink-wash); }
+.cv-card.cv-sel { box-shadow: var(--ch-sh-xl), 0 0 0 4px var(--pink); z-index: 2; }
+.cv-card.cv-nb { box-shadow: var(--ch-sh-md), 0 0 0 3px var(--cyan); }
+.cv-root.cv-dim .cv-card:not(.cv-sel):not(.cv-nb) { opacity: 0.45; }
+.cv-card-top { display: flex; align-items: center; gap: 5px; font: 800 var(--fs-xs) var(--body); text-transform: uppercase; color: var(--muted); letter-spacing: 0.03em; }
+.cv-kind { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cv-dot { width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--ink); background: var(--line-cool); flex: none; }
+.cv-live .cv-dot { background: var(--ok); animation: cv-blink 1.2s ease-in-out infinite; }
+.cv-label { font: 800 var(--fs-body) var(--body); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.cv-sub { font: 600 var(--fs-sm) var(--body); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cv-far .cv-sub, .cv-far .cv-card-top { visibility: hidden; }
+.cv-far .cv-label { font-size: var(--fs-lg); margin-top: 6px; }
+.cv-card.cv-hit { animation: cv-pulse 0.7s ease-out; }
+@keyframes cv-pulse {
+  30% { box-shadow: var(--ch-sh-md), 0 0 0 7px var(--yellow); }
+  100% { box-shadow: var(--ch-sh-md); }
+}
+@keyframes cv-blink { 50% { opacity: 0.35; } }
+
+/* Hover quick actions (Conductor style). */
+.cv-actions {
+  position: absolute;
+  right: 4px;
+  bottom: 3px;
+  display: none;
+  gap: 3px;
+}
+.cv-card:hover .cv-actions, .cv-card:focus-within .cv-actions, .cv-card.cv-sel .cv-actions { display: flex; }
+.cv-card:hover .cv-sub, .cv-card:focus-within .cv-sub, .cv-card.cv-sel .cv-sub { visibility: hidden; }
+.cv-act {
+  min-height: 20px;
+  padding: 1px 6px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--yellow);
+  color: var(--ink);
+  font: 900 var(--fs-xs) var(--body);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.cv-act:hover:not(:disabled) { background: var(--paper); }
+.cv-act:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ---- edge swatches (legend); the edges themselves are drawn on a <canvas>, see EDGE_STYLE ---- */
+.cv-e { fill: none; stroke-linecap: round; vector-effect: non-scaling-stroke; opacity: 0.6; }
+.cv-e-spawned { stroke: var(--sky); stroke-width: 3; }
+.cv-e-uses { stroke: var(--ink); stroke-width: 1.6; stroke-dasharray: 7 5; opacity: 0.4; }
+.cv-e-touched { stroke: var(--ok-text); stroke-width: 1.6; stroke-dasharray: 2 4; }
+.cv-e-decided { stroke: var(--pink); stroke-width: 2.2; stroke-dasharray: 10 4 2 4; }
+.cv-e-awaits { stroke: var(--warn); stroke-width: 3; stroke-dasharray: 8 5; }
+.cv-stage-hook { fill: var(--cv-hook); background: var(--cv-hook); }
+.cv-stage-brain { fill: var(--cv-brain); background: var(--cv-brain); }
+.cv-stage-plan { fill: var(--cv-plan); background: var(--cv-plan); }
+.cv-stage-reason { fill: var(--cv-reason); background: var(--cv-reason); }
+.cv-stage-tool { fill: var(--cv-tool); background: var(--cv-tool); }
+
+/* ---- sidebar sections: View (stats + zoom/fit/list/planet), Legend ---- */
+.cv-view-sec, .cv-legend-sec {
+  display: grid;
+  gap: 7px;
+}
+.cv-legend-sec {
+  --cv-hook: var(--warn);
+  --cv-brain: var(--pink);
+  --cv-plan: var(--cyan);
+  --cv-reason: var(--violet);
+  --cv-tool: var(--yellow);
+}
+.cv-ctl-hint { font: 600 var(--fs-sm) var(--body); color: var(--muted); }
+.cv-counts { font: 700 var(--fs-sm) var(--body); }
+.cv-ctl-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.cv-btn {
+  min-height: var(--btn-h);
+  padding: 0 10px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  color: var(--ink);
+  font: 800 var(--fs-sm) var(--body);
+  cursor: pointer;
+  box-shadow: var(--ch-sh-sm);
+}
+.cv-btn.on { background: var(--yellow); }
+.cv-btn.cv-primary { background: var(--pink); color: var(--ink); } /* white on pink is 3.14:1 */
+.cv-btn.cv-icon { width: var(--btn-h); padding: 0; font-size: var(--fs-lg); }
+.cv-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.cv-btn:focus-visible { outline-offset: 1px; }
+.cv-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; font: 700 var(--fs-sm) var(--body); align-items: center; }
+.cv-leg { display: inline-flex; align-items: center; gap: 4px; }
+.cv-leg svg { width: 28px; height: 8px; overflow: visible; }
+.cv-leg .cv-e { opacity: 1; }
+.cv-leg-title { color: var(--muted); }
+.cv-stage { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--ink); display: inline-block; }
+
+/* ---- minimap + inspector: both float over the graph surface, positioned by shell.css from the
+   main area's insets (body.alef .cv-minimap / .cv-inspector). ---- */
+.cv-minimap, .cv-inspector {
+  position: fixed;
+  z-index: 12;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  color: var(--ink);
+}
+.cv-minimap { right: 16px; bottom: 46px; width: 204px; height: 136px; padding: 3px; overflow: hidden; border-radius: var(--r-card); box-shadow: var(--ch-sh-xl); }
+.cv-minimap canvas { width: 100%; height: 100%; display: block; border-radius: 9px; cursor: crosshair; }
+
+/* The inspector is the ONE contextual details panel: same geometry as the shell's #panel (docked
+   full height at the right edge of the main area), shown only when a node is selected. The base
+   rule here is the fallback (no shell); shell.css's body.alef rule owns the real position, so this
+   overrides it at equal-or-higher specificity (.cv-root is always an earlier sibling in the DOM). */
+.cv-inspector {
+  top: 0;
+  right: 0;
+  left: auto;
+  bottom: 0;
+  width: min(360px, 100vw);
+  max-height: none;
+  overflow: auto;
+  padding: 10px 12px 12px;
+  border-top: none;
+  border-right: none;
+  border-bottom: none;
+  border-left: 3px solid var(--ink);
+  border-radius: 0;
+  box-shadow: var(--ch-edge-left);
+  z-index: 24;
+}
+body.alef .cv-root ~ .cv-inspector {
+  top: var(--alef-top);
+  right: var(--alef-right);
+  left: auto; /* shell.css's own body.alef .cv-inspector rule sets `left`: cancel it, or left+width+right over-constrains the box and `right` gets ignored */
+  bottom: var(--alef-bottom);
+  width: min(360px, calc(100vw - var(--alef-left) - var(--alef-right)));
+}
+.cv-ins-head { display: flex; gap: 6px; align-items: center; padding-right: 34px; }
+.cv-ins-kind { font: 900 var(--fs-xs) var(--body); text-transform: uppercase; background: var(--yellow); border: 2px solid var(--ink); border-radius: 999px; padding: 0 8px; }
+.cv-ins-status { font: 700 var(--fs-sm) var(--body); color: var(--muted); flex: 1; }
+.cv-ins-close { position: absolute; top: 8px; right: 44px; width: 26px; height: 26px; border: 2px solid var(--ink); border-radius: 7px; background: var(--paper); font: 900 var(--fs-md) var(--display); cursor: pointer; line-height: 1; }
+.cv-ins-title { margin: 6px 0 2px; font: 900 var(--fs-md) var(--body); overflow-wrap: anywhere; }
+.cv-ins-sub { margin: 0 0 6px; font: 600 var(--fs-sm) var(--body); color: var(--muted); }
+.cv-inspector h4 { margin: 8px 0 3px; font: 900 var(--fs-sm) var(--display); text-transform: uppercase; }
+.cv-ins-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.cv-ins-row, .cv-list-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 6px;
+  align-items: center;
+  min-height: 28px;
+  padding: 2px 6px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 var(--fs-sm) var(--body);
+  cursor: pointer;
+  text-align: left;
+}
+.cv-ins-row:hover, .cv-list-row:hover { background: var(--yellow-wash); }
+.cv-ins-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cv-ins-meta { color: var(--muted); font-size: var(--fs-xs); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
+.cv-ins-more { font: 600 var(--fs-sm) var(--body); color: var(--muted); }
+.cv-chip { font: 900 var(--fs-xs) var(--body); text-transform: uppercase; border: 2px solid var(--ink); border-radius: 999px; padding: 0 6px; background: var(--paper); }
+.cv-chip-spawned { background: var(--sky-wash); }
+.cv-chip-uses { background: var(--line); }
+.cv-chip-touched { background: var(--ok-wash); }
+.cv-chip-decided { background: var(--pink-wash); }
+.cv-chip-awaits { background: var(--pink-wash); }
+
+/* ---- list fallback ---- */
+.cv-list {
+  /* A full-screen sheet above the HUD: on a phone the HUD card would otherwise cover it. */
+  position: fixed;
+  inset: 0;
+  z-index: 19; /* over the HUD and the collapsed-panel pills, under the status bar */
+  overflow: auto;
+  padding: 16px 16px 90px;
+  background: var(--cream);
+}
+.cv-list-head { position: sticky; top: -16px; background: var(--cream); padding: 8px 0; z-index: 1; }
+.cv-list-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 8px; font: 900 var(--fs-md) var(--display); text-transform: uppercase; }
+.cv-list-sec h4 { margin: 12px 0 4px; font: 900 var(--fs-body) var(--display); text-transform: uppercase; }
+.cv-list-sec ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; max-width: 760px; }
+.cv-list-row { min-height: 40px; }
+.cv-list-row .cv-dot { width: 10px; height: 10px; }
+.cv-list-row.cv-live .cv-dot { background: var(--ok); }
+
+#hud-canvas.active { background: var(--yellow); }
+
+@media (max-width: 520px) {
+  .cv-minimap { display: none; }
+  /* Mirrors #panel's own phone treatment (shell.css): right/bottom/width stay from the alef
+     rule above (the insets already respond to the phone breakpoint); only the height frees up. */
+  body.alef .cv-root ~ .cv-inspector { top: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cv-card.cv-hit, .cv-live .cv-dot { animation: none; }
+}
+.cv-small { padding-top: 4px; }
+.cv-small .cv-sub { display: none; }
+.cv-small .cv-label { font-size: var(--fs-sm); }
+/* The Planet | Canvas switch is a 5th toolbar button: let the row wrap instead of overflowing the card. */
+#hud-top:has(> #hud-canvas) { flex-wrap: wrap; row-gap: 6px; }
+.cv-tiny .cv-actions { display: none !important; }
+.cv-tiny .cv-card:hover .cv-sub, .cv-tiny .cv-card.cv-sel .cv-sub { visibility: visible; }
+
+/* Solo bar: "Everything | One session" + the session picker (solo.ts). */
+.cv-solo { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 6; display: flex; align-items: flex-start; gap: 8px; font: 700 var(--fs-body) var(--body); }
+.cv-solo-seg { display: inline-flex; border: 3px solid var(--ink); border-radius: 12px; background: var(--paper); box-shadow: var(--ch-sh-md); overflow: hidden; }
+.cv-solo-btn { all: unset; cursor: pointer; padding: 7px 14px; font: 800 var(--fs-body) var(--body); color: var(--ink); white-space: nowrap; }
+.cv-solo-btn + .cv-solo-btn { border-left: 3px solid var(--ink); }
+.cv-solo-btn.cv-on { background: var(--yellow); }
+.cv-solo-btn:focus-visible { outline-offset: -3px; }
+.cv-solo-note { cursor: pointer; max-width: 380px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 7px 10px; border: 3px solid var(--ink); border-radius: 12px; background: var(--yellow-wash); box-shadow: var(--ch-sh-md); }
+.cv-solo-picker { position: absolute; top: 100%; left: 0; margin-top: 8px; width: 340px; max-width: calc(100vw - 32px); border: 3px solid var(--ink); border-radius: 12px; background: var(--paper); box-shadow: var(--ch-sh-lg); padding: 8px; }
+.cv-solo-input { box-sizing: border-box; width: 100%; padding: 7px 9px; border: 2px solid var(--ink); border-radius: 8px; font: 600 var(--fs-body) var(--body); }
+.cv-solo-list { max-height: 320px; overflow: auto; margin-top: 6px; display: grid; gap: 2px; }
+.cv-solo-row { all: unset; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; }
+.cv-solo-row:hover, .cv-solo-row:focus-visible { background: var(--yellow-wash); }
+.cv-solo-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line-cool); flex: none; }
+.cv-solo-row.cv-live .cv-solo-dot { background: var(--ok); }
+.cv-solo-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cv-solo-meta { color: var(--muted); font-size: var(--fs-xs); }
+.cv-solo-empty { padding: 8px; color: var(--muted); }
+.cv-root.cv-soloing .cv-viewport { animation: cv-solo-in 0.32s ease-out; }
+@keyframes cv-solo-in { from { opacity: 0.35; transform: scale(0.985); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .cv-root.cv-soloing .cv-viewport { animation: none; } }
+.cv-k-dept { --cv-stripe: var(--ok); background: var(--ok-wash); }
+.cv-k-artifact { --cv-stripe: #3d8bff; background: var(--cyan-wash); }
+.cv-k-more { --cv-stripe: var(--line-cool); border-style: dashed; }
+@media (max-width: 640px) { .cv-solo { flex-wrap: wrap; justify-content: center; width: calc(100vw - 32px); } .cv-solo-picker { left: 50%; transform: translateX(-50%); } }
+/* ?redact=1: a subagent's label is its free-text task (redact.ts only rewrites session titles). */
+body.alef-redact .cv-k-subagent .cv-label { filter: blur(5px); }

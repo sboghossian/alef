@@ -1,0 +1,206 @@
+/* Logs tab (right sidebar, #alef-pane-logs). Scoped to .lg-* (style.css is shared). Comic look:
+   thick ink outlines, chunky rows, hard shadows — matches mac.css / the other right-sidebar panes. */
+
+.lg-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2);
+  margin-bottom: var(--s2);
+}
+.lg-toolbar select,
+.lg-toolbar .lg-search {
+  height: var(--btn-h);
+  padding: 0 var(--s2);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 var(--fs-min) var(--body);
+}
+.lg-search {
+  flex: 1;
+  min-width: 120px;
+}
+.lg-search::placeholder {
+  color: var(--placeholder);
+}
+.lg-check {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: 700 var(--fs-min) var(--body);
+  color: var(--ink);
+  white-space: nowrap;
+}
+.lg-follow,
+.lg-copy-all {
+  min-height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 var(--fs-min) var(--body);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.lg-follow.on {
+  background: var(--yellow);
+}
+.lg-follow:not(.on) {
+  background: var(--pink-wash);
+}
+.lg-follow:hover,
+.lg-copy-all:hover {
+  box-shadow: var(--ch-sh-sm);
+}
+
+.lg-resume-pill {
+  display: block;
+  width: 100%;
+  margin-bottom: var(--s2);
+  padding: var(--s1) var(--s3);
+  border: 2.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--sky);
+  color: var(--paper);
+  font: 800 var(--fs-min) var(--body);
+  cursor: pointer;
+  box-shadow: var(--ch-sh-sm);
+}
+
+.lg-body {
+  display: grid;
+  gap: 3px;
+}
+
+.lg-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s2);
+  padding: 4px var(--s2);
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+}
+.lg-row.lg-lvl-warn {
+  background: var(--yellow-wash);
+}
+.lg-row.lg-lvl-error {
+  background: var(--pink-wash);
+}
+.lg-time {
+  flex: none;
+  min-width: 3.6em;
+  font: 700 var(--fs-xs) var(--body);
+  color: var(--muted);
+}
+.lg-line {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+.lg-scope-tag {
+  flex: none;
+  padding: 0 5px;
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  background: var(--cream);
+  font: 800 var(--fs-xs) var(--body);
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.lg-msg {
+  min-width: 0;
+  font: 600 var(--fs-min) var(--body);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.lg-msg.lg-fail {
+  color: var(--pink-text);
+  font-weight: 800;
+}
+.lg-ok {
+  flex: none;
+  font-weight: 900;
+}
+.lg-ok-yes {
+  color: var(--ok-text);
+}
+.lg-ok-no {
+  color: var(--pink-text);
+}
+.lg-detail {
+  flex: 1 1 100%;
+  font: 600 var(--fs-xs) var(--body);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.lg-repeat {
+  flex: none;
+  padding: 0 5px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--yellow);
+  font: 800 var(--fs-xs) var(--body);
+  color: var(--ink);
+}
+.lg-copy-row {
+  flex: none;
+  margin-left: auto;
+  padding: 0 6px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--cream);
+  font: 700 var(--fs-xs) var(--body);
+  color: var(--ink);
+  cursor: pointer;
+}
+.lg-copy-row:hover {
+  background: var(--paper);
+}
+
+.lg-empty {
+  padding: var(--s2) var(--s3);
+  font: 600 var(--fs-body) var(--body);
+  color: var(--muted);
+}
+.lg-empty.lg-error {
+  color: var(--pink-text);
+}
+.lg-refresh-warn {
+  margin: 0 0 var(--s2);
+  padding: var(--s1) var(--s2);
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: var(--pink-wash);
+  font: 700 var(--fs-xs) var(--body);
+  color: var(--pink-text);
+}
+.lg-retry,
+.lg-older {
+  margin-top: var(--s2);
+  min-height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 var(--fs-min) var(--body);
+  cursor: pointer;
+}
+.lg-retry:hover,
+.lg-older:hover {
+  box-shadow: var(--ch-sh-sm);
+}
+
+/* ?redact=1: message/detail text is free-form and may echo user content — blurred like other
+   free text (client/src/redact.ts), the town log's shape and counts stay real. */
+body.alef-redact .lg-msg,
+body.alef-redact .lg-detail {
+  filter: blur(5px);
+}

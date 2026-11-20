@@ -1,0 +1,45 @@
+/* "jobs": the Job row (agent panel, under Role; drone panel, under Type). Scoped to job- / fx-job-
+   classes; colours come from style.css's tokens. */
+
+.fx-jobs:empty {
+  display: none;
+}
+
+.job-badge {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s1) var(--s2);
+}
+
+.job-chip {
+  display: inline-block;
+  padding: 1px 7px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  font: 800 var(--fs-xs) var(--body);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  background: var(--paper);
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.job-chip.job-lawyer { background: var(--sky-wash); }
+.job-chip.job-hacker { background: var(--pink); }
+.job-chip.job-learner { background: var(--yellow); }
+.job-chip.job-builder { background: var(--ok-wash); }
+.job-chip.job-gatherer { background: var(--cyan-wash); }
+.job-chip.job-none,
+.job-chip.job-unknown {
+  background: var(--cream);
+  color: var(--muted);
+  text-transform: none;
+  font-weight: 700;
+}
+
+.job-reason {
+  font-size: var(--fs-min);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}

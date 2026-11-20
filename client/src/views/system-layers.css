@@ -1,0 +1,287 @@
+/* 🧭 System, Map lens (system-render-layers.ts): a vertical stack of layers that scrolls inside the
+   stage. Thick ink outlines, yellow accent; tokens come from the shell so the dark theme follows. */
+.view-system .sv-stage.is-map {
+  overflow-y: auto;
+  padding: 14px 18px 40px;
+  box-sizing: border-box;
+}
+.view-system .sv-map {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+.view-system .sv-arrow {
+  text-align: center;
+  font: 900 var(--fs-lg)/1 var(--display);
+  color: var(--violet);
+}
+.view-system .sv-prompt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  background: var(--yellow-soft);
+  color: var(--ink);
+  box-shadow: var(--ch-sh-md);
+}
+.view-system .sv-prompt-title {
+  font: 900 var(--fs-md)/1 var(--display);
+}
+.view-system .sv-layer {
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-lg);
+  padding: 10px 12px 12px;
+}
+.view-system .sv-layer-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.view-system .sv-tag {
+  padding: 1px 7px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--yellow);
+  color: var(--ink);
+  font: 900 var(--fs-xs)/1.4 var(--display);
+}
+.view-system .sv-layer-title,
+.view-system .sv-block-title {
+  margin: 0;
+  font: 900 var(--fs-md)/1.2 var(--display);
+}
+.view-system .sv-layer-note,
+.view-system .sv-block-note {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+  font-size: var(--fs-sm);
+}
+.view-system .sv-sub-title {
+  margin: 10px 0 4px;
+  font: 800 var(--fs-xs)/1 var(--display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.view-system .sv-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px;
+}
+.view-system .sv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.view-system .sv-col {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.view-system .sv-links {
+  display: flex;
+  justify-content: space-around;
+  gap: 8px;
+  margin-top: 8px;
+  color: var(--muted);
+  font: 800 var(--fs-sm)/1 var(--display);
+}
+.view-system .sv-link::before {
+  content: "⇄ ";
+}
+/* items */
+.view-system .sv-it {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 4px 10px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 var(--fs-sm)/1.25 var(--body);
+  text-align: left;
+  cursor: pointer;
+  max-width: 100%;
+}
+.view-system .sv-it:hover,
+.view-system .sv-it.is-selected {
+  background: var(--yellow-soft);
+  color: var(--ink);
+}
+.view-system .sv-it:focus-visible {
+  outline: 3px solid var(--violet);
+  outline-offset: 1px;
+}
+.view-system .sv-it-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.view-system .sv-it-label {
+  font-weight: 900;
+}
+.view-system .sv-it-value,
+.view-system .sv-it-sub {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+.view-system .sv-it:hover .sv-it-value,
+.view-system .sv-it:hover .sv-it-sub {
+  color: var(--muted);
+}
+.view-system .sv-it-card {
+  display: flex;
+  box-shadow: var(--ch-sh-sm);
+  padding: 8px 10px;
+}
+.view-system .sv-it-row {
+  display: flex;
+  border-width: 0 0 2px;
+  border-style: dashed;
+  border-color: var(--line);
+  border-radius: 0;
+  background: transparent;
+  width: 100%;
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 0;
+  align-items: flex-start;
+  padding: 5px 4px;
+}
+.view-system .sv-it-row .sv-dot {
+  margin-top: 3px;
+  flex: 0 0 auto;
+}
+.view-system .sv-it-row .sv-it-text {
+  flex: 1 1 auto;
+}
+.view-system .sv-it-row .sv-it-label {
+  overflow-wrap: anywhere;
+}
+.view-system .sv-it-bar {
+  display: flex;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  padding: 2px 4px;
+  min-height: 24px;
+}
+.view-system .sv-it-bar .sv-it-text {
+  flex: 0 0 150px;
+}
+.view-system .sv-n {
+  width: 26px;
+  text-align: right;
+  font-weight: 900;
+}
+.view-system .sv-track {
+  flex: 1;
+  height: 10px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.view-system .sv-fill {
+  display: block;
+  height: 100%;
+  background: var(--yellow);
+}
+/* hero: the engine stays dark in both themes */
+.view-system .sv-hero {
+  background: var(--ink);
+  color: var(--cream);
+  box-shadow: 4px 4px 0 var(--yellow);
+}
+.view-system .sv-hero .sv-layer-note,
+.view-system .sv-hero .sv-sub-title {
+  color: var(--line-cool);
+}
+.view-system .sv-hero .sv-layer-title {
+  font-size: var(--fs-xl);
+}
+.view-system .sv-hero .sv-it {
+  background: var(--ink);
+  border-color: var(--cream);
+  color: var(--cream);
+}
+.view-system .sv-hero .sv-it:hover {
+  background: var(--yellow-soft);
+  color: var(--ink);
+}
+.view-system .sv-hero .sv-it-value,
+.view-system .sv-hero .sv-it-sub {
+  color: var(--line-cool);
+}
+.view-system .sv-hero .sv-big .sv-it {
+  min-height: 38px;
+  border-radius: 999px;
+  border-color: var(--yellow);
+}
+.view-system .sv-hero .sv-dot {
+  border-color: var(--cream);
+}
+.view-system .sv-steps {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+.view-system .sv-step-arrow {
+  align-self: center;
+  color: var(--yellow);
+  font-weight: 900;
+}
+.view-system .sv-it-step {
+  flex: 1 1 96px;
+  min-width: 96px;
+  min-height: 62px;
+  align-items: flex-start;
+  border-radius: 12px;
+}
+/* L4 */
+.view-system .sv-block {
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  padding: 8px 10px;
+  background: var(--paper);
+  min-width: 0;
+}
+.view-system .sv-wide {
+  margin-bottom: 8px;
+}
+.view-system .sv-quad {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 8px;
+  align-items: start;
+}
+.view-system .sv-quad .sv-col {
+  gap: 0;
+}
+.view-system .sv-shipped {
+  align-self: center;
+  padding: 6px 22px;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  background: #16b98a;
+  color: var(--paper);
+  font: 900 var(--fs-md)/1 var(--display);
+  box-shadow: var(--ch-sh-md);
+}
+.view-system .is-narrow .sv-it-bar .sv-it-text {
+  flex-basis: 110px;
+}

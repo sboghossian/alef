@@ -1,0 +1,20 @@
+/* Archive (fossils): the Fossil panel. */
+.archive-card h3 { margin: 2px 0 8px; font-size: var(--fs-md); line-height: 1.25; overflow-wrap: anywhere; }
+.archive-card h4 { margin: 12px 0 4px; font-size: var(--fs-sm); }
+.archive-card .sub { margin: 0; font-size: var(--fs-xs); font-weight: 800; color: var(--muted); }
+.archive-card .kv { display: grid; grid-template-columns: max-content 1fr; gap: 3px 10px; font-size: var(--fs-sm); }
+.archive-card .kv span { overflow-wrap: anywhere; }
+.archive-card .note { font-size: var(--fs-xs); color: var(--muted); margin-top: 10px; }
+.archive-id { font-family: ui-monospace, monospace; font-size: var(--fs-xs); }
+.archive-open { font-weight: 800; }
+.archive-list { list-style: none; margin: 0; padding: 0; max-height: 320px; overflow-y: auto; }
+.archive-row { display: flex; gap: 8px; width: 100%; padding: 4px 2px; border: 0; background: none; font: inherit; font-size: var(--fs-sm); text-align: left; cursor: pointer; color: inherit; }
+.archive-row:hover, .archive-row:focus-visible { background: rgba(0, 0, 0, 0.06); outline: none; }
+.archive-date { flex: none; min-width: 5.5em; font-variant-numeric: tabular-nums; color: var(--muted); }
+.archive-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.archive-more { font-size: var(--fs-xs); color: var(--muted); padding: 4px 2px; }
+/* A run that failed or stopped: its reason on a second line under the title. */
+.archive-row-run { flex-wrap: wrap; }
+.archive-run { flex: 1 0 100%; padding-left: calc(5.5em + 8px); font-size: var(--fs-xs); overflow-wrap: anywhere; }
+.archive-run-failed { color: var(--bad-text); }
+.archive-run-stopped { color: var(--muted); }

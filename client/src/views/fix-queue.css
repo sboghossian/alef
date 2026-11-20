@@ -1,0 +1,155 @@
+/* The Fix queue (fix-queue.ts): Health's top section. Minimal chrome: hairline rows, the chrome
+   role tokens (shell/chrome.css) for every width, radius and fill, one severity bar per row. */
+
+.fq {
+  max-width: 720px;
+  margin: 0 auto var(--s4);
+}
+
+.fq .fq-h {
+  font-family: var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: var(--fs-min);
+  color: var(--muted);
+  margin: 0 0 2px;
+}
+
+.fq .fq-count {
+  display: inline-block;
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--ch-accent);
+  color: var(--ink);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  text-align: center;
+}
+
+.fq .fq-caption,
+.fq .fq-empty,
+.fq .fq-capped {
+  margin: 0 0 var(--s2);
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+
+.fq .fq-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border: var(--ch-bw-hair) solid var(--ch-seam-deep);
+  border-radius: var(--ch-r-pane);
+  background: var(--paper);
+  overflow: hidden;
+}
+
+.fq .fq-row {
+  display: flex;
+  gap: var(--s2);
+  padding: 10px 12px 10px 0;
+}
+
+.fq .fq-row + .fq-row {
+  border-top: var(--ch-bw-hair) solid var(--ch-seam);
+}
+
+.fq .fq-sev {
+  flex: none;
+  width: 4px;
+  align-self: stretch;
+  border-radius: 0 var(--ch-r-micro) var(--ch-r-micro) 0;
+  background: var(--ch-seam-deep);
+}
+
+.fq .fq-high .fq-sev {
+  background: var(--pink);
+}
+
+.fq .fq-medium .fq-sev {
+  background: var(--ch-accent);
+}
+
+.fq .fq-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.fq .fq-title {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.fq .fq-evidence,
+.fq .fq-meta,
+.fq .fq-launch {
+  margin: 2px 0 0;
+  font-size: var(--fs-min);
+  overflow-wrap: anywhere;
+}
+
+.fq .fq-meta {
+  color: var(--muted);
+}
+
+.fq .fq-launch {
+  padding: 2px 6px;
+  border-radius: var(--ch-r-tag);
+  background: var(--ch-soft);
+  display: inline-block;
+}
+
+.fq .fq-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.fq .fq-btn {
+  min-height: 26px;
+  padding: 0 var(--s2);
+  border: var(--ch-bw-hair) solid var(--ch-seam-deep);
+  border-radius: var(--ch-r-chip);
+  background: transparent;
+  color: var(--ink);
+  font: 700 var(--fs-xs) var(--body);
+  cursor: pointer;
+}
+
+.fq .fq-btn:hover {
+  background: var(--ch-hover);
+}
+
+.fq .fq-btn:focus-visible {
+  outline: var(--ch-bw) solid var(--ink);
+  outline-offset: 1px;
+}
+
+.fq .fq-more {
+  margin-top: var(--s2);
+}
+
+.fq .fq-aside {
+  margin-top: var(--s2);
+  font-size: var(--fs-min);
+}
+
+.fq .fq-aside summary {
+  cursor: pointer;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.fq .fq-aside .fq-row {
+  opacity: 0.7;
+}
+
+.fq .fq-aside-note {
+  color: var(--muted);
+  font-size: var(--fs-min);
+}

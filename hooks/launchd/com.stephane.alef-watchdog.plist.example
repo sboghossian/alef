@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Alef watchdog: every 5 minutes (and once at login), start the live Alef if :5179 is down and free.
+  An EXAMPLE, not installed by anything in this repo. Install steps: hooks/install.md ("Watchdog").
+  __HOME__ is replaced with your home folder at install time (launchd expands neither ~ nor $HOME).
+  No WorkingDirectory: the script needs none, and a launchd job must not start inside ~/Documents.
+  AbandonProcessGroup: alef-live start leaves the server and vite in this job's process group, and without
+  this key launchd kills that group as soon as the watchdog exits (launchd.plist(5)).
+-->
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.stephane.alef-watchdog</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>__HOME__/.alef-live/scripts/alef-watchdog.sh</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StartInterval</key>
+	<integer>300</integer>
+	<key>AbandonProcessGroup</key>
+	<true/>
+	<key>StandardOutPath</key>
+	<string>__HOME__/Library/Logs/alef/watchdog.launchd.log</string>
+	<key>StandardErrorPath</key>
+	<string>__HOME__/Library/Logs/alef/watchdog.launchd.log</string>
+</dict>
+</plist>

@@ -1,0 +1,22 @@
+/* View-switch cross-fade (P4b, round 10). shell.ts's showView() toggles these two classes on
+   #alef-view around every viewHost.show() call: instant opacity:0 while the old view's content
+   is torn down and the new one mounts (both invisible for the same tick either way), then the
+   transition below eases back to opacity:1 over 160ms — the honest version of a "cross-fade"
+   given the view host swaps root.innerHTML synchronously (see docs/VIEWS.md, ViewHost.show).
+   Planet views never touch the canvas here: #app keeps rendering underneath (shell.ts's
+   pausesPlanet()/alef-no-planet grace window covers the planet→non-planet case separately, so
+   the render-loop pause never lands mid-fade). */
+#alef-view {
+  transition: opacity 160ms ease;
+}
+#alef-view.alef-vt-hidden {
+  opacity: 0;
+}
+#alef-view.alef-vt-instant {
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  #alef-view {
+    transition: none;
+  }
+}

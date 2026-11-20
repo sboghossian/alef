@@ -1,0 +1,562 @@
+/* Courier run (features/courier). Scoped to #courier-* ids and .cr-* classes; uses the
+   comic tokens from style.css (--ink, --cream, --yellow, --pink, --display, --body). */
+
+.cr-hud {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 18;
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-areas: "col radar" "status status" "keys keys";
+  gap: 6px 12px;
+  align-items: start;
+  padding: 10px 12px;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  box-shadow: var(--ch-sh-lg);
+  color: var(--ink);
+  font-family: var(--body);
+  pointer-events: none;
+  max-width: calc(100vw - 32px);
+}
+.cr-col {
+  grid-area: col;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 150px;
+}
+.cr-top {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.cr-title {
+  font-family: var(--display);
+  font-size: var(--fs-body);
+  letter-spacing: 0.04em;
+  color: var(--pink);
+  -webkit-text-stroke: 0.5px var(--ink);
+}
+.cr-replay {
+  font-family: var(--display);
+  font-size: var(--fs-xs);
+  padding: 1px 6px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--cyan);
+}
+.cr-score {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.cr-points {
+  font-family: var(--display);
+  font-size: 30px;
+  line-height: 1;
+}
+.cr-pts {
+  font-family: var(--display);
+  font-size: var(--fs-sm);
+}
+.cr-helped {
+  font-size: var(--fs-body);
+  font-weight: 700;
+}
+.cr-combo {
+  position: relative;
+  min-height: 16px;
+  font-size: var(--fs-min);
+  font-weight: 700;
+  color: var(--muted);
+}
+.cr-combo.hot {
+  font-family: var(--display);
+  font-size: var(--fs-md);
+  color: var(--pink);
+}
+.cr-combo-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+  height: 3px;
+  background: var(--pink);
+  transform-origin: left center;
+  transform: scaleX(0);
+}
+.cr-carried {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+.cr-slot {
+  width: 18px;
+  height: 18px;
+  border: 2px dashed var(--muted);
+  border-radius: 4px;
+}
+.cr-slot.full {
+  border: 2px solid var(--ink);
+  box-shadow: var(--ch-sh-sm);
+}
+.cr-boost {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--display);
+  font-size: var(--fs-xs);
+}
+.cr-boost-bar {
+  flex: 1;
+  height: 10px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--paper);
+  overflow: hidden;
+}
+.cr-boost-bar i {
+  display: block;
+  height: 100%;
+  background: var(--cyan);
+  transform-origin: left center;
+}
+.cr-boost.on .cr-boost-bar i {
+  background: var(--pink);
+}
+.cr-radar {
+  grid-area: radar;
+  width: 110px;
+  height: 110px;
+}
+.cr-status {
+  grid-area: status;
+  margin: 0;
+  max-width: 300px;
+  font-size: var(--fs-body);
+  font-weight: 700;
+}
+.cr-keys {
+  grid-area: keys;
+  margin: 0;
+  font-size: var(--fs-min);
+  color: var(--muted);
+}
+
+/* The in-flight approval card: bottom centre, big, impossible to miss. */
+.cr-card {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 36;
+  width: min(460px, calc(100vw - 32px));
+  padding: 12px 14px;
+  background: var(--cream);
+  color: var(--ink);
+  border: 4px solid var(--ink);
+  border-radius: var(--r-card);
+  box-shadow: 6px 6px 0 var(--bad);
+  font-family: var(--body);
+}
+.cr-card-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cr-card-head h2 {
+  margin: 0;
+  flex: 1;
+  font-family: var(--display);
+  font-size: var(--fs-lg);
+}
+.cr-bang {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: var(--bad);
+  color: var(--paper);
+  font-family: var(--display);
+  animation: cr-pulse 0.9s ease-in-out infinite;
+}
+.cr-timer {
+  font-family: var(--display);
+  font-size: var(--fs-body);
+}
+.cr-who {
+  margin: 4px 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--fs-body);
+  font-weight: 700;
+  color: var(--muted);
+}
+.cr-tool {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+.cr-toolname {
+  font-family: var(--display);
+  font-size: var(--fs-md);
+  padding: 1px 6px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--yellow);
+}
+.cr-tooltitle {
+  font-size: var(--fs-body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cr-body {
+  margin: 6px 0;
+  max-height: 110px;
+  overflow: hidden;
+  padding: 6px 8px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-size: var(--fs-sm);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.cr-really {
+  margin: 4px 0 8px;
+  font-size: var(--fs-body);
+  word-break: break-word;
+}
+.cr-holds {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.cr-hold {
+  --fill: 0;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--touch);
+  padding: 6px 10px 6px 50px;
+  border: 3px solid var(--ink);
+  border-radius: var(--r-btn);
+  box-shadow: var(--ch-sh-md);
+  font-family: var(--display);
+  font-size: var(--fs-body);
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: none;
+  user-select: none;
+}
+.cr-allow {
+  background: var(--ok-wash);
+}
+.cr-deny {
+  background: var(--pink-wash);
+}
+.cr-hold kbd {
+  font-family: var(--display);
+  font-size: var(--fs-body);
+  padding: 0 5px;
+  border: 2px solid var(--ink);
+  border-radius: 5px;
+  background: var(--paper);
+}
+/* Radial fill: a conic ring that sweeps around while the key is held. */
+.cr-ring {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  width: 32px;
+  height: 32px;
+  margin-top: -16px;
+  border: 3px solid var(--ink);
+  border-radius: 50%;
+  background: conic-gradient(var(--ink) calc(var(--fill) * 360deg), var(--paper) 0);
+}
+.cr-hold.on {
+  transform: translate(2px, 2px);
+  box-shadow: var(--ch-sh-sm);
+}
+.cr-boosting .cr-hold {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.cr-hint {
+  margin-top: 8px;
+  font-size: var(--fs-min);
+  color: var(--muted);
+}
+.cr-boosting .cr-hint {
+  color: var(--bad-text);
+  font-weight: 700;
+}
+
+.cr-arrows {
+  position: fixed;
+  inset: 0;
+  z-index: 17;
+  pointer-events: none;
+}
+.cr-arrow {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: -18px 0 0 -18px;
+  width: 36px;
+}
+.cr-arrow i {
+  display: block;
+  width: 0;
+  height: 0;
+  border-left: 13px solid transparent;
+  border-right: 13px solid transparent;
+  border-bottom: 24px solid var(--bad);
+  filter: drop-shadow(0 0 0 var(--ink)) drop-shadow(2px 2px 0 var(--ink));
+}
+.cr-arrow span {
+  white-space: nowrap;
+  padding: 0 5px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--cream);
+  font-family: var(--display);
+  font-size: var(--fs-xs);
+}
+.cr-arrow-beacon i {
+  animation: cr-pulse 0.8s ease-in-out infinite;
+}
+.cr-arrow-hq i {
+  border-bottom-color: var(--yellow);
+}
+.cr-arrow-moon i {
+  border-bottom-color: var(--violet);
+}
+
+.cr-near {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 16;
+  max-width: 280px;
+  padding: 4px 8px;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: var(--ch-sh-md);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+  color: var(--ink);
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cr-pop {
+  position: fixed;
+  left: 50%;
+  top: 30%;
+  z-index: 19;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  text-align: center;
+}
+.cr-pop b {
+  font-family: var(--display);
+  font-size: 54px;
+  line-height: 1;
+  color: var(--yellow);
+  -webkit-text-stroke: 3px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 5px 5px 0 var(--ink);
+}
+.cr-pop-approve b {
+  color: var(--ok);
+}
+.cr-pop-deny b {
+  color: var(--bad);
+}
+.cr-pop span {
+  margin-top: 6px;
+  padding: 2px 10px;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  font-family: var(--display);
+  font-size: var(--fs-md);
+  color: var(--ink);
+}
+.cr-pop.go {
+  animation: cr-pop 1.6s ease-out forwards;
+}
+
+/* Phone controls: stick bottom-left, boost bottom-right. */
+.cr-touch {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 18;
+  height: 0;
+}
+.cr-stick {
+  position: absolute;
+  left: 20px;
+  bottom: 28px;
+  width: 128px;
+  height: 128px;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  background: rgba(255, 248, 231, 0.75);
+  box-shadow: var(--ch-sh-lg);
+  touch-action: none;
+}
+.cr-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 54px;
+  height: 54px;
+  margin: -27px 0 0 -27px;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  background: var(--pink);
+}
+.cr-boost-btn {
+  position: absolute;
+  right: 20px;
+  bottom: 40px;
+  width: 96px;
+  height: 96px;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: var(--ch-sh-lg);
+  font-family: var(--display);
+  font-size: var(--fs-md);
+  color: var(--ink);
+  touch-action: none;
+}
+.cr-boost-btn.on {
+  background: var(--pink);
+  transform: translate(2px, 2px);
+  box-shadow: var(--ch-sh-sm);
+}
+body:not(.courier-riding) .cr-touch {
+  display: none;
+}
+
+@keyframes cr-pulse {
+  50% {
+    transform: scale(1.18);
+  }
+}
+@keyframes cr-pop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.4);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(-50%, -50%) scale(1.12);
+    opacity: 1;
+  }
+  30% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -64%) scale(1);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 700px) {
+  .cr-hud {
+    top: 8px;
+    right: 8px;
+    left: 8px;
+    grid-template-columns: 1fr auto;
+    padding: 6px 8px;
+    gap: 4px 8px;
+  }
+  .cr-col {
+    min-width: 120px;
+  }
+  .cr-points {
+    font-size: var(--fs-xl);
+  }
+  .cr-radar {
+    width: 80px;
+    height: 80px;
+  }
+  .cr-keys {
+    display: none;
+  }
+  .cr-card {
+    bottom: 220px;
+  }
+  .cr-stick {
+    left: 16px;
+    bottom: 96px;
+    width: 112px;
+    height: 112px;
+  }
+  .cr-boost-btn {
+    right: 16px;
+    bottom: 108px;
+    width: 88px;
+    height: 88px;
+  }
+  /* Phones: while flying, the stick and boost need the bottom of the screen and the score HUD
+     the top. The world's own panels come back the moment you press Orbit. */
+  body.courier-riding #hud-card,
+  body.courier-riding #districts,
+  body.courier-riding #dispatch,
+  body.courier-riding #quick-chips,
+  body.courier-riding #captions,
+  body.courier-riding #ticker,
+  body.courier-riding #exploring,
+  body.courier-riding .aw-pill[data-surface="hud"],
+  body.courier-riding .aw-pill[data-surface="districts"],
+  body.courier-riding .aw-pill[data-surface="dispatch"],
+  body.courier-riding .aw-pill[data-surface="chips"],
+  body.courier-riding .aw-pill[data-surface="captions"],
+  body.courier-riding .aw-pill[data-surface="ticker"] {
+    display: none !important;
+  }
+  .cr-pop b {
+    font-size: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cr-bang,
+  .cr-arrow-beacon i {
+    animation: none;
+  }
+  .cr-pop.go {
+    animation: none;
+  }
+}
+
+/* The collapse chevron (ui/kit collapsible) is the one clickable thing on the HUD. */
+.cr-hud .aw-chev {
+  pointer-events: auto;
+}

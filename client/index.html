@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Alef</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <div id="app"></div>
+    <div id="labels" aria-hidden="false"></div>
+    <div id="overlays"></div>
+    <div id="zaps"></div>
+    <div id="bubble" hidden></div>
+
+    <div id="exploring" hidden></div>
+    <div id="compass-box"><canvas id="compass" aria-label="Compass minimap" role="img"></canvas></div>
+    <div id="city-card" hidden></div>
+    <!-- The Board view (views/board.ts) moves #board-cols in and out; agent-state decorates it. -->
+    <div id="board-home" hidden><div id="board-cols"></div></div>
+
+    <div id="dispatch">
+      <form id="dispatch-form">
+        <textarea id="dispatch-text" aria-label="What should a new Claude session build?" rows="1" maxlength="4000" placeholder="Ask the world to build something…  e.g. “add a dark mode toggle to the blog”"></textarea>
+        <div class="dispatch-row">
+          <label class="dispatch-city-label">to <select id="dispatch-city" aria-label="City to dispatch to"></select></label>
+          <button id="dispatch-voice" type="button" class="chip" title="Dictate with your voice">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1a2.5 2.5 0 0 0-2.5 2.5v4a2.5 2.5 0 0 0 5 0v-4A2.5 2.5 0 0 0 8 1zM3.5 7a4.5 4.5 0 0 0 9 0M8 11.5V15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            Voice
+          </button>
+          <span class="dispatch-hint"><kbd>↵</kbd> to dispatch</span>
+          <button id="dispatch-send" type="submit" class="comic-btn small">Dispatch</button>
+        </div>
+        <div id="dispatch-status" role="status"></div>
+      </form>
+    </div>
+
+    <div id="statusbar"><span id="sb-chips" role="group" aria-label="Weather, machine and radio"></span></div>
+
+    <div id="welcome" class="ui-backdrop welcome-backdrop" hidden>
+      <div class="ui-dialog welcome-card" aria-labelledby="welcome-title">
+        <div class="welcome-burst" aria-hidden="true">HI!</div>
+        <h2 id="welcome-title">Welcome to Alef</h2>
+        <p class="welcome-sub">Every Claude Code session on this Mac, in one place.</p>
+        <ol class="welcome-steps">
+          <li><b>Every city is a project folder,</b> every house is a Claude session. Cars driving around are agents working right now.</li>
+          <li><b>Five places up top:</b> Now, World, Work, Mind and System (keys <kbd>1</kbd>–<kbd>5</kbd>); each opens the view you last used there, and its other views sit beside it. Click a house to step into that agent's room.</li>
+          <li><b>The Feed on the right</b> is everything happening, live: activity, Jev's results, reports, and permission requests you can approve right there.</li>
+          <li><b>Press <kbd>⌘K</kbd> to find anything</b> (a view, a vault section, a project, a person, a note), or type a task in the prompt box to start a new session. <kbd>F</kbd> is focus mode, <kbd>H</kbd> hides every panel.</li>
+        </ol>
+        <div class="welcome-actions">
+          <button id="welcome-ok" type="button" class="comic-btn">Got it</button>
+          <button id="welcome-help" type="button" class="comic-btn secondary">Show help &amp; shortcuts</button>
+        </div>
+        <p class="welcome-foot">Press <kbd>?</kbd> any time for the map legend and every shortcut.</p>
+      </div>
+    </div>
+
+    <div id="room-hud" hidden>
+      <button id="room-back" type="button" class="comic-btn small">← Back</button>
+      <div class="room-card">
+        <div id="room-title"></div>
+        <div id="room-meta"></div>
+        <div class="room-actions">
+          <button id="room-editor" type="button" class="comic-btn small secondary">Open in VS Code</button>
+          <button id="room-focus" type="button" class="comic-btn small secondary" title="Focus on this agent (F)">Focus <kbd>F</kbd></button>
+          <span id="room-status" role="status"></span>
+        </div>
+        <div class="room-hint">Click a note on the pinboard to open the project · the shelf holds the skills it used · <kbd>Esc</kbd> to leave</div>
+      </div>
+    </div>
+    <button id="room-btn-label" type="button">Reactivate</button>
+    <div id="fade"></div>
+
+    <div id="fatal" hidden role="alert">
+      <div class="offline-card">
+        <div class="offline-burst">OOF!</div>
+        <h2>This browser can't draw the world.</h2>
+        <p id="fatal-reason">3D (WebGL) is unavailable. Turn on hardware acceleration in your browser settings, then reload.</p>
+        <button id="fatal-reload" type="button">Reload</button>
+      </div>
+    </div>
+    <div id="offline" hidden role="alert">
+      <div class="offline-card">
+        <div class="offline-burst">UH-OH!</div>
+        <h2>The Alef server is offline.</h2>
+        <p>Run <code>npm run dev</code> in <code>agent-world</code>, then this page picks it up on its own.</p>
+        <div id="offline-countdown">Trying again…</div>
+        <button id="offline-retry" type="button">Retry now</button>
+      </div>
+    </div>
+    <div id="tooltip" hidden></div>
+
+    <div id="panel" hidden>
+      <button id="panel-close" type="button" aria-label="Close panel" title="Close (Esc)">×</button>
+      <div id="panel-content"></div>
+    </div>
+
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

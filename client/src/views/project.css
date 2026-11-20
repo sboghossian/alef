@@ -1,0 +1,365 @@
+/* 📌 Project (project.ts) and the project cards Home shows (project-card.ts). Minimal chrome: the
+   chrome role tokens (shell/chrome.css) for every width, radius, shadow and fill; type sizes from
+   --fs-min / --fs-body or em, never a literal. */
+
+.view-project .pj-root {
+  container-type: inline-size;
+  height: 100%;
+  overflow: auto;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--fs-body);
+}
+
+.view-project .pj-main {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--s4) 24px 56px;
+}
+
+.view-project .pj-loading,
+.view-project .pj-error,
+.pj-empty {
+  color: var(--muted);
+  font-size: var(--fs-min);
+  margin: 0;
+}
+
+.view-project .pj-error {
+  color: var(--pink-text);
+  margin-bottom: var(--s2);
+}
+
+/* ── header ── */
+.view-project .pj-head {
+  padding-bottom: var(--s3);
+  border-bottom: var(--ch-bw-hair) solid var(--ch-seam);
+  margin-bottom: var(--s3);
+}
+
+.view-project .pj-kicker {
+  margin: 0;
+  font-family: var(--display);
+  font-size: var(--fs-min);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.view-project .pj-name {
+  margin: 2px 0 var(--s1);
+  font-family: var(--display);
+  font-size: 2em;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.view-project .pj-desc {
+  margin: 0 0 var(--s2);
+  max-width: 72ch;
+}
+
+.view-project .pj-acts,
+.pc-acts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.view-project .pj-btn,
+.pc-act {
+  min-height: var(--btn-h);
+  padding: 0 12px;
+  border: var(--ch-bw) solid var(--ch-seam-deep);
+  border-radius: var(--ch-r-field);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.view-project .pj-btn:hover,
+.pc-act:hover {
+  background: var(--ch-hover);
+}
+
+.view-project .pj-primary,
+.pc-primary {
+  background: var(--ch-on);
+  color: var(--ch-on-ink);
+  border-color: var(--ch-on);
+  box-shadow: var(--ch-sh-sm);
+}
+
+.view-project .pj-primary:hover,
+.pc-primary:hover {
+  background: var(--ch-on);
+  box-shadow: var(--ch-sh-sm-hot);
+}
+
+/* ── facts strip ── */
+.view-project .pj-facts {
+  list-style: none;
+  margin: 0 0 var(--s4);
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+
+.view-project .pj-fact {
+  display: flex;
+  flex-direction: column;
+  min-width: 110px;
+  padding: var(--s2) var(--s3);
+  border: var(--ch-bw-hair) solid var(--ch-seam-deep);
+  border-radius: var(--ch-r-pane);
+  background: var(--paper);
+}
+
+.view-project .pj-fact b {
+  font-family: var(--display);
+  font-size: 1.35em;
+  overflow-wrap: anywhere;
+}
+
+.view-project .pj-fact span {
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+
+.view-project .pj-hot {
+  border-color: var(--ch-accent);
+  box-shadow: var(--ch-sh-ring);
+}
+
+/* ── cards ── */
+.view-project .pj-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--s4);
+}
+
+@container (min-width: 900px) {
+  .view-project .pj-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .view-project #pj-sessions {
+    grid-row: span 2;
+  }
+}
+
+.view-project .pj-card {
+  min-width: 0;
+  padding: var(--s3);
+  border: var(--ch-bw-hair) solid var(--ch-seam-deep);
+  border-radius: var(--ch-r-card);
+  background: var(--paper);
+}
+
+.view-project .pj-card-h {
+  margin: 0 0 var(--s2);
+  font-family: var(--display);
+  font-size: var(--fs-min);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.view-project .pj-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.view-project .pj-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--s2);
+  padding: 6px 0;
+}
+
+.view-project .pj-row + .pj-row {
+  border-top: var(--ch-bw-hair) solid var(--ch-seam);
+}
+
+.view-project .pj-row-main {
+  flex: 1 1 240px;
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s2);
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.view-project .pj-row-main:hover .pj-row-title {
+  text-decoration: underline;
+}
+
+.view-project .pj-row-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+}
+
+.view-project .pj-todo .pj-row-title {
+  flex: 1 1 240px;
+  font-weight: 400;
+}
+
+.view-project .pj-row-meta,
+.view-project .pj-more {
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+
+.view-project .pj-in_progress .pj-row-meta {
+  color: var(--ok-text);
+  font-weight: 700;
+}
+
+.view-project .pj-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ch-seam-deep);
+}
+
+.view-project .pj-dot.pj-live {
+  background: var(--ok-text);
+}
+
+.view-project .pj-note-title {
+  margin: 0;
+  font-weight: 700;
+}
+
+.view-project .pj-summary {
+  margin: var(--s2) 0 var(--s3);
+  line-height: 1.5;
+}
+
+.view-project .pj-dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--s1) var(--s3);
+  margin: 0;
+}
+
+.view-project .pj-dl dt {
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+
+.view-project .pj-dl dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.pj-jump {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pj-jump-btn {
+  width: 100%;
+  padding: var(--s1) var(--s2);
+  border: 0;
+  border-radius: var(--ch-r-chip);
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pj-jump-btn:hover {
+  background: var(--ch-hover);
+}
+
+/* ── Home's "Pick up where you left off" cards ── */
+.pc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--s3);
+}
+
+.pc-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  min-width: 0;
+  padding: var(--s3);
+  border: var(--ch-bw-hair) solid var(--ch-seam-deep);
+  border-radius: var(--ch-r-pane);
+  background: var(--paper);
+}
+
+.pc-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--s1) var(--s2);
+}
+
+.pc-name {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font-family: var(--display);
+  font-size: 1.15em;
+  font-weight: 800;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+
+.pc-name:hover {
+  text-decoration: underline;
+}
+
+.pc-sessions,
+.pc-meta,
+.pc-none {
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+
+.pc-verdict,
+.pc-meta {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.pc-acts {
+  margin-top: auto;
+  padding-top: var(--s1);
+}
+
+.pc-act {
+  min-height: 28px;
+  padding: 0 10px;
+  font-size: var(--fs-min);
+}
+
+@media (max-width: 520px) {
+  .view-project .pj-main {
+    padding: var(--s3) var(--s4) 48px;
+  }
+  .view-project .pj-btn,
+  .pc-act {
+    min-height: var(--touch);
+  }
+}

@@ -1,0 +1,146 @@
+/* 📚 Library (library.ts): the page shell and what is new in it. The cards, shelves, drawer and
+   panel styles are the old Shelf and Projects ones (shelf.css, projects.css), now scoped to
+   .view-library. Bright cream page, ink outlines. */
+.view-library .lib-root {
+  --pv-panel-w: 340px;
+  --sv-panel-w: 340px;
+  container-type: inline-size;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 0, var(--yellow-wash) 0, var(--cream) 60%);
+  color: var(--ink);
+  font: var(--fs-body)/1.45 var(--body);
+}
+.view-library .lib-main {
+  height: 100%;
+  overflow: auto;
+  padding: 16px 20px 40px;
+}
+.view-library .lib-root.has-panel .lib-main {
+  padding-right: calc(var(--pv-panel-w) + 16px);
+}
+@container (max-width: 720px) {
+  .view-library .lib-root.has-panel .lib-main {
+    padding-right: 20px;
+  }
+}
+.view-library .lib-lens {
+  display: inline-flex;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-sm);
+  overflow: hidden;
+}
+.view-library .lib-lens button {
+  padding: 6px 14px;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: 800 var(--fs-sm)/1.2 var(--body);
+  cursor: pointer;
+}
+.view-library .lib-lens button + button {
+  border-left: 2px solid var(--ink);
+}
+.view-library .lib-lens button:focus-visible {
+  outline-offset: -3px;
+}
+/* The count strip on a project card. */
+.view-library .lib-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.view-library .lib-strip span {
+  padding: 1px 7px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  font: 800 var(--fs-xs)/1.4 var(--body);
+}
+.view-library .lib-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+  color: var(--ink);
+  font: 600 var(--fs-sm)/1.4 var(--body);
+}
+.view-library .pv-card.is-unfiled {
+  border-style: dashed;
+}
+/* Drawer: tabs between the head and the body. */
+.view-library .lib-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 8px 12px 0;
+  border-bottom: 3px solid var(--ink);
+  background: var(--yellow-wash);
+}
+.view-library .lib-tab {
+  padding: 5px 12px;
+  border: 2px solid var(--ink);
+  border-bottom: 0;
+  border-radius: 8px 8px 0 0;
+  background: var(--paper);
+  color: inherit;
+  font: 800 var(--fs-sm)/1.2 var(--body);
+  cursor: pointer;
+}
+.view-library .lib-tab[aria-selected="true"] {
+  background: var(--paper);
+  margin-bottom: -3px;
+  padding-bottom: 8px;
+}
+.view-library .lib-tab small {
+  margin-left: 4px;
+  color: var(--muted);
+}
+.view-library .pv-h4 {
+  margin: 10px 0 4px;
+  font: 800 var(--fs-sm)/1.2 var(--body);
+}
+.view-library .pv-notes-age {
+  font-style: italic;
+}
+.view-library .lib-type-h {
+  margin: 14px 0 6px;
+  font: 900 var(--fs-body)/1.2 var(--display);
+}
+.view-library .lib-panel .sv-grid {
+  grid-template-columns: 1fr;
+}
+@media (max-width: 600px) {
+  .view-library .lib-main,
+  .view-library .lib-root.has-panel .lib-main {
+    padding: 12px 16px 32px;
+  }
+  .view-library .lib-lens {
+    width: 100%;
+  }
+  .view-library .lib-lens button {
+    flex: 1;
+    padding: 6px 4px;
+  }
+}
+/* The drawer head's 📌 Page: opens the Project page (views/project.ts). */
+.view-library .lib-page-btn {
+  min-height: 32px;
+  padding: 0 10px;
+  border: var(--ch-bw) solid var(--ch-seam-deep);
+  border-radius: var(--ch-r-field);
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--fs-min);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.view-library .lib-page-btn:hover {
+  background: var(--ch-hover);
+}

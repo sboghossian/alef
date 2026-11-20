@@ -1,0 +1,567 @@
+/* 🩺 Health view. Scoped under .view-health. Non-planet: an opaque, scrollable cream page.
+   Bright comic kit only — cream cards, thick ink borders, hard offset shadows. */
+
+.view-health.health-view {
+  height: 100%;
+  overflow-y: auto;
+  background: var(--cream);
+  padding: var(--s4);
+  box-sizing: border-box;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--fs-body);
+}
+
+.health-view * {
+  box-sizing: border-box;
+}
+
+/* .health-view is the div inside the view root, so the compound rule above never matches and
+   the header sat flush under the top bar, clipped. Only its padding is restored here: the rest
+   of that rule (13px body text among it) would restyle the whole page. */
+.view-health .health-view {
+  padding: var(--s4);
+}
+
+.health-view .hv-head {
+  max-width: 720px;
+  margin: 0 auto var(--s3);
+}
+
+.health-view .hv-tabs {
+  display: flex;
+  gap: var(--s2);
+}
+
+.health-view .hv-tab {
+  min-height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  font: 800 var(--fs-body) var(--body);
+  cursor: pointer;
+}
+
+.health-view .hv-welcome {
+  max-width: 720px;
+  margin: 0 auto var(--s3);
+  padding: var(--s3);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--yellow-soft);
+  box-shadow: var(--ch-sh-lg);
+  font-weight: 700;
+}
+
+.health-view .hv-panel {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+/* ── Start an agent ─────────────────────────────────────────────────── */
+
+.health-view .hv-start {
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--paper);
+  box-shadow: var(--ch-sh-lg);
+  padding: var(--s3);
+  margin-bottom: var(--s4);
+}
+
+.health-view .hv-start-h {
+  font-family: var(--display);
+  margin: 0 0 4px;
+  font-size: var(--fs-lg);
+}
+
+.health-view .hv-start-sub {
+  margin: 0 0 var(--s3);
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+
+.health-view .hv-start-city-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  font-weight: 700;
+  margin-bottom: var(--s2);
+}
+
+.health-view .hv-start-city-row select {
+  min-height: var(--btn-h);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--cream);
+  font: inherit;
+  padding: 0 8px;
+}
+
+.health-view .hv-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-bottom: var(--s2);
+}
+
+.health-view .hv-preset {
+  min-height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--cream);
+  font: 700 var(--fs-sm) var(--body);
+  cursor: pointer;
+}
+
+.health-view .hv-start-text {
+  width: 100%;
+  min-height: 88px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--cream);
+  font: inherit;
+  padding: 8px;
+  resize: vertical;
+}
+
+.health-view .hv-start-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  margin-top: var(--s2);
+}
+
+.health-view .hv-launch {
+  min-height: var(--touch);
+  padding: 0 var(--s4);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--yellow);
+  font: 900 var(--fs-body) var(--display);
+  cursor: pointer;
+  box-shadow: var(--ch-sh-md);
+}
+
+.health-view .hv-launch:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.health-view .hv-start-status {
+  font-size: var(--fs-min);
+  color: var(--muted);
+}
+
+.health-view .hv-start-status.hv-ok {
+  color: var(--ok-text);
+}
+
+.health-view .hv-start-status.hv-err {
+  color: var(--bad-text);
+}
+
+.health-view .hv-start-empty {
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+
+/* ── the ring + checklist ──────────────────────────────────────────── */
+
+.health-view .hv-ring-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  margin-bottom: var(--s4);
+}
+
+.health-view .hv-ring {
+  position: relative;
+  width: 108px;
+  height: 108px;
+  border-radius: 50%;
+  border: 4px solid var(--ink);
+  flex: none;
+  --ring-fill: var(--ok);
+  background: conic-gradient(var(--ring-fill) calc(var(--pct, 0) * 1%), var(--paper) 0);
+}
+
+.health-view .hv-ring-warn {
+  --ring-fill: var(--amber);
+}
+
+.health-view .hv-ring-bad {
+  --ring-fill: var(--bad);
+}
+
+.health-view .hv-ring-hole {
+  position: absolute;
+  inset: 12px;
+  border-radius: 50%;
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.health-view .hv-ring-pct {
+  font-family: var(--display);
+  font-size: var(--fs-lg);
+}
+
+.health-view .hv-ring-caption {
+  font-weight: 800;
+}
+
+/* ── Issues list (round 11, package D): worst-first, with why-it-matters/evidence/confidence ── */
+
+.health-view .hv-issues-section {
+  margin-bottom: var(--s4);
+}
+
+.health-view .hv-issues-count {
+  display: inline-block;
+  min-width: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--pink);
+  color: var(--paper);
+  font-size: var(--fs-xs);
+  font-weight: 800;
+  text-align: center;
+}
+
+.health-view .hv-issues-empty {
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+
+.health-view .hv-issues-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+
+.health-view .hv-issue {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s2);
+  padding: 10px 12px;
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--paper);
+  box-shadow: var(--ch-sh-md);
+}
+
+.health-view .hv-issue-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.health-view .hv-issue-why,
+.health-view .hv-issue-evidence {
+  margin: 0;
+  font-size: var(--fs-min);
+  color: var(--ink);
+}
+
+.health-view .hv-issue-evidence {
+  color: var(--muted);
+}
+
+.health-view .hv-confidence {
+  align-self: flex-start;
+  font: 700 var(--fs-xs) var(--body);
+  padding: 1px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--cream);
+}
+
+.health-view .hv-issue-fixwrap {
+  margin-top: 2px;
+}
+
+.health-view .hv-issue-steps {
+  margin: 2px 0 0;
+  padding-left: 18px;
+  font-size: var(--fs-min);
+  color: var(--ink);
+}
+
+.health-view .hv-issue-steps li {
+  margin-bottom: 2px;
+}
+
+.health-view .hv-issue-nofix {
+  margin: 0;
+  font-size: var(--fs-min);
+  color: var(--muted);
+}
+
+.health-view .hv-group {
+  margin-bottom: var(--s4);
+}
+
+.health-view .hv-group-h {
+  font-family: var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: var(--fs-min);
+  color: var(--muted);
+  margin: 0 0 6px;
+}
+
+.health-view .hv-group-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.health-view .hv-check {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s2);
+  padding: 8px 10px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+}
+
+.health-view .hv-dot {
+  flex: none;
+  font-weight: 900;
+  width: 18px;
+  text-align: center;
+}
+
+.health-view .hv-pass .hv-dot {
+  color: var(--ok-text);
+}
+
+.health-view .hv-warn .hv-dot {
+  color: var(--amber-text);
+}
+
+.health-view .hv-fail .hv-dot {
+  color: var(--bad-text);
+}
+
+.health-view .hv-unknown .hv-dot {
+  color: var(--muted);
+}
+
+.health-view .hv-check-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.health-view .hv-check-line {
+  font-size: var(--fs-body);
+}
+
+.health-view .hv-why {
+  border: none;
+  background: none;
+  color: var(--sky);
+  font: 700 var(--fs-min) var(--body);
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.health-view .hv-why-text {
+  margin: 2px 0 0;
+  font-size: var(--fs-min);
+  color: var(--muted);
+}
+
+.health-view .hv-fix {
+  flex: none;
+  min-height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--yellow);
+  font: 800 var(--fs-sm) var(--body);
+  cursor: pointer;
+}
+
+.health-view .hv-trust-list {
+  list-style: none;
+  margin: var(--s2) 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.health-view .hv-trust-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  min-width: 0;
+}
+.health-view .hv-trust-name {
+  flex: none;
+  font-size: var(--fs-sm);
+}
+.health-view .hv-trust-cwd {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--fs-sm);
+}
+.health-view .hv-trust {
+  flex: none;
+  min-height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--yellow);
+  font: 800 var(--fs-sm) var(--body);
+  cursor: pointer;
+}
+.health-view .hv-trust:disabled,
+.health-view .hv-trust-all:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.health-view .hv-trust-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2);
+  margin-top: var(--s2);
+}
+.health-view .hv-trust-all {
+  min-height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--yellow);
+  font: 800 var(--fs-sm) var(--body);
+  cursor: pointer;
+}
+.health-view .hv-trust-bulk-note {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+.health-view .hv-fix:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.health-view .hv-tidy-missing {
+  color: var(--muted);
+  padding: var(--s3);
+}
+
+@media (max-width: 520px) {
+  .health-view .hv-ring-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ── Snooze 7 days / Won't fix (muted, still listed) and the approvals hook install preview ── */
+
+.health-view .hv-dismissed {
+  opacity: 0.6;
+  box-shadow: none;
+}
+
+.health-view .hv-dismiss-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2);
+  margin-top: 2px;
+}
+
+.health-view .hv-dismiss,
+.health-view .hv-undismiss,
+.health-view .hv-install-cancel {
+  min-height: 28px;
+  padding: 0 var(--s2);
+  border: 1px solid var(--muted);
+  border-radius: var(--r-btn);
+  background: transparent;
+  color: var(--ink);
+  font: 700 var(--fs-xs) var(--body);
+  cursor: pointer;
+}
+
+.health-view .hv-dismissed-note {
+  font-size: var(--fs-min);
+  color: var(--muted);
+}
+
+.health-view .hv-install {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+  margin-top: var(--s2);
+  min-width: 0;
+}
+
+.health-view .hv-install-note {
+  margin: 0;
+  font-size: var(--fs-min);
+}
+
+.health-view .hv-diff {
+  margin: 0;
+  padding: var(--s2);
+  max-height: 280px;
+  overflow: auto;
+  border: 1px solid var(--muted);
+  border-radius: var(--r-btn);
+  background: var(--cream);
+  font: var(--fs-sm)/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre;
+}
+
+.health-view .hv-diff-add {
+  color: var(--ok-text);
+}
+
+.health-view .hv-diff-del {
+  color: var(--pink);
+}
+
+.health-view .hv-diff-ctx {
+  color: var(--muted);
+}
+
+.health-view .hv-install-actions {
+  display: flex;
+  gap: var(--s2);
+}
+
+.health-view .hv-install-confirm {
+  min-height: 28px;
+  padding: 0 var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--yellow);
+  font: 800 var(--fs-sm) var(--body);
+  cursor: pointer;
+}
+
+/* "Draft a fix" under an issue (the button itself: ui/draft-fix.css). */
+.health-view .hv-draft-row {
+  margin-top: 6px;
+}

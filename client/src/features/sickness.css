@@ -1,0 +1,166 @@
+/* "sickness": the agent-panel chips and the Clinic panel. Scoped to sk- classes; colours come
+   from style.css's tokens. */
+
+.fx-sickness:empty {
+  display: none;
+}
+
+.fx-sickness:not(:empty) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  margin: var(--s2) 0;
+}
+
+.sk-chip {
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  padding: var(--s1) var(--s2);
+  font-size: var(--fs-body);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+  background: var(--cream);
+  overflow-wrap: anywhere;
+}
+
+.sk-chip.sk-open,
+.sk-chip.sk-chronic {
+  background: var(--pink);
+}
+
+.sk-chip.sk-exposed {
+  background: var(--yellow);
+}
+
+.sk-more,
+.sk-note {
+  font-size: var(--fs-min);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.sk-note {
+  margin: 2px 0;
+}
+
+.sk-counts {
+  margin: 2px 0 4px;
+  font-size: var(--fs-body);
+  font-weight: 700;
+}
+
+.sk-vault {
+  margin: 6px 0 0;
+  font-size: var(--fs-min);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.sk-section {
+  margin: 14px 0 4px;
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  cursor: default;
+}
+
+summary.sk-section {
+  cursor: pointer;
+}
+
+.sk-lineage {
+  margin: 8px 0;
+}
+
+.sk-lineage-h {
+  margin: 8px 0 2px;
+  font-size: var(--fs-body);
+  overflow-wrap: anywhere;
+}
+
+.sk-kind {
+  font-size: var(--fs-min);
+  color: var(--muted);
+  font-weight: 700;
+  margin: 2px 0;
+}
+
+.sk-cases {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sk-case {
+  border-left: 4px solid var(--muted);
+  padding: var(--s1) var(--s2);
+  margin: var(--s1) 0;
+  background: var(--paper);
+}
+
+.sk-case.sk-open,
+.sk-case.sk-chronic {
+  border-left-color: var(--pink);
+}
+
+.sk-case.sk-exposed {
+  border-left-color: var(--yellow);
+}
+
+.sk-case.sk-treated {
+  border-left-color: var(--sky);
+}
+
+.sk-case-head {
+  display: flex;
+  gap: var(--s2);
+  align-items: baseline;
+  font-size: var(--fs-body);
+}
+
+.sk-state {
+  flex: none;
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  padding: 0 4px;
+}
+
+.sk-label {
+  overflow-wrap: anywhere;
+}
+
+.sk-meta,
+.sk-treated {
+  font-size: var(--fs-min);
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.sk-treated {
+  font-weight: 700;
+}
+
+.sk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1);
+  margin-top: var(--s1);
+}
+
+.sk-status {
+  font-size: var(--fs-min);
+  color: var(--ok-text);
+  overflow-wrap: anywhere;
+}
+
+.sk-status:empty {
+  display: none;
+}
+
+.sk-status.error {
+  color: var(--bad-text);
+}

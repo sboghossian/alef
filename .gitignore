@@ -1,0 +1,14 @@
+node_modules
+dist/
+data/
+*.db
+*.db-*
+.env
+.gstack/
+.vitest/
+client/.vitest/
+
+# Local voice (round 10): Piper venv + downloaded voice files + temp audio
+.venv-piper/
+data/piper/
+data/voice-tmp/

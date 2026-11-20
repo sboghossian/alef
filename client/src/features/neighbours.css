@@ -1,0 +1,12 @@
+/* "neighbours" agent-panel section: reuses the panel's h3 + .file-list rows (style.css). Only the
+   evidence tag is tuned so it stays on one line, and row text wraps at word boundaries. */
+
+.fx-neighbours .file-list li {
+  word-break: normal;
+  overflow-wrap: anywhere;
+}
+
+.fx-neighbours .nb-tag {
+  flex: none;
+  white-space: nowrap;
+}

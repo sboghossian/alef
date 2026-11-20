@@ -1,0 +1,360 @@
+/* Mac tab (right sidebar, #alef-pane-mac). Scoped to .mac-* (style.css is shared).
+   Comic look: cream background, thick ink outlines, chunky rounded tiles, hard shadows. */
+
+.mac-now {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s2) var(--s3);
+  margin-bottom: var(--s3);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--yellow);
+  box-shadow: var(--ch-sh-md);
+}
+.mac-now-line {
+  flex: 1;
+  min-width: 0;
+  font: 600 var(--fs-body) var(--body);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.mac-now-label {
+  font: 900 var(--fs-min) var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mac-btn {
+  min-height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 var(--fs-min) var(--body);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.mac-btn:hover,
+.mac-btn:focus-visible {
+  background: var(--cream);
+  box-shadow: var(--ch-sh-sm);
+}
+.mac-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: none;
+}
+.mac-btn-go {
+  background: var(--yellow);
+}
+.mac-btn-hot {
+  background: var(--pink-wash);
+}
+.mac-btn.on {
+  background: var(--sky);
+  color: var(--paper);
+}
+
+.mac-input,
+.mac-launch-input {
+  width: 100%;
+  height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  color: var(--ink);
+  font: 600 var(--fs-body) var(--body);
+  box-sizing: border-box;
+}
+.mac-input::placeholder,
+.mac-launch-input::placeholder,
+.mac-script-src::placeholder {
+  color: var(--placeholder);
+}
+
+/* ---------------------------------------------------------------- launcher */
+.mac-launch {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--s2);
+  margin-bottom: var(--s3);
+}
+.mac-launch-input {
+  height: 40px;
+  font-size: var(--fs-md);
+  border-width: 3px;
+}
+.mac-suggest {
+  grid-column: 1 / -1;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s1);
+}
+.mac-suggest:empty {
+  display: none;
+}
+.mac-sug {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  width: 100%;
+  min-height: var(--btn-h);
+  padding: var(--s1) var(--s2);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 var(--fs-body) var(--body);
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.mac-sug.first,
+.mac-sug:hover,
+.mac-sug:focus-visible {
+  background: var(--cream);
+  box-shadow: var(--ch-sh-sm);
+}
+.mac-sug kbd {
+  margin-left: auto;
+  font: 700 var(--fs-min) var(--body);
+  padding: 1px 5px;
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  background: var(--yellow);
+  color: var(--ink);
+}
+
+/* ---------------------------------------------------------------- quick actions */
+.mac-quick {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s2);
+  margin-bottom: var(--s2);
+}
+.mac-quick .mac-btn {
+  padding: 0 var(--s1);
+}
+.mac-volume {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  margin: var(--s2) 0;
+  font: 700 var(--fs-min) var(--body);
+  color: var(--ink);
+}
+.mac-volume-range {
+  flex: 1;
+  accent-color: var(--pink);
+}
+.mac-volume-out {
+  min-width: 3.2em;
+  text-align: right;
+}
+.mac-notify {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--s2);
+  margin-bottom: var(--s3);
+}
+.mac-shot {
+  margin-bottom: var(--s3);
+}
+.mac-shot img {
+  display: block;
+  width: 100%;
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  box-shadow: var(--ch-sh-md);
+}
+.mac-shot-cap {
+  display: block;
+  margin-top: var(--s1);
+  font: 600 var(--fs-min) var(--body);
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- running apps */
+.mac-apps,
+.mac-shortcuts {
+  list-style: none;
+  margin: 0 0 var(--s4);
+  padding: 0;
+  display: grid;
+  gap: var(--s2);
+}
+.mac-app {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  grid-template-areas:
+    "avatar name tag"
+    "actions actions actions";
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s2) var(--s3);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--paper);
+  box-shadow: var(--ch-sh-md);
+}
+.mac-app.front {
+  background: var(--yellow-wash);
+}
+.mac-avatar {
+  grid-area: avatar;
+  display: inline-grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border: 2.5px solid var(--ink);
+  border-radius: 11px;
+  background: var(--mac-tile, var(--yellow));
+  color: var(--ink);
+  font: 900 var(--fs-lg) var(--display);
+  flex: none;
+}
+.mac-avatar.emoji {
+  font: var(--fs-lg) system-ui;
+}
+.mac-avatar.sm {
+  width: 24px;
+  height: 24px;
+  border-width: 2px;
+  border-radius: 7px;
+  font-size: var(--fs-sm);
+}
+.mac-app-name {
+  grid-area: name;
+  min-width: 0;
+  font: 800 var(--fs-md) var(--body);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.mac-tag {
+  grid-area: tag;
+  padding: 1px 7px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--cream);
+  font: 700 var(--fs-min) var(--body);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.mac-tag-front {
+  background: var(--yellow);
+  color: var(--ink);
+}
+.mac-app-actions {
+  grid-area: actions;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--s2);
+}
+
+/* ---------------------------------------------------------------- shortcuts */
+.mac-sc-filter,
+.mac-sc-input {
+  margin-bottom: var(--s2);
+}
+.mac-sc {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s1) var(--s1) var(--s1) var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+}
+.mac-sc-name {
+  flex: 1;
+  min-width: 0;
+  font: 700 var(--fs-body) var(--body);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+/* ---------------------------------------------------------------- script console */
+.mac-script {
+  display: grid;
+  gap: var(--s2);
+  margin-bottom: var(--s4);
+}
+.mac-lang {
+  display: flex;
+  gap: var(--s2);
+}
+.mac-script-src {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 96px;
+  padding: var(--s2);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--paper);
+  color: var(--ink);
+  font: var(--fs-body)/1.4 ui-monospace, "SF Mono", Menlo, monospace;
+  resize: vertical;
+}
+.mac-script-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  flex-wrap: wrap;
+}
+.mac-script-hint {
+  font: 600 var(--fs-min) var(--body);
+  color: var(--muted);
+}
+.mac-script-out {
+  margin: 0;
+  max-height: 220px;
+  overflow: auto;
+  padding: var(--s2) var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--ok-wash);
+  color: var(--ok-text);
+  font: var(--fs-sm)/1.4 ui-monospace, "SF Mono", Menlo, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.mac-script-out.mac-script-err {
+  background: var(--pink-wash);
+  color: var(--pink-text);
+}
+
+/* ---------------------------------------------------------------- undo toast */
+.mac-undo {
+  position: sticky;
+  bottom: var(--s2);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  padding: var(--s2) var(--s3);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--pink);
+  color: var(--paper);
+  box-shadow: var(--ch-sh-md);
+  font: 800 var(--fs-body) var(--body);
+}
+.mac-undo-text {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.mac-undo-btn {
+  background: var(--yellow);
+}
+
+.mac-empty {
+  padding: var(--s2) var(--s3);
+  font: 600 var(--fs-body) var(--body);
+  color: var(--muted);
+  list-style: none;
+}

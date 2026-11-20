@@ -1,0 +1,35 @@
+/* "completeness" feature: just the status-bar chip's score-tone color and its one-time
+   first-run pulse. The chip's shape/border/padding come from the shell's shared status-chip
+   style — this file only touches its own hc-* classes. */
+
+#hud-f-completeness-chip.hc-good {
+  color: var(--ok-text);
+}
+
+#hud-f-completeness-chip.hc-warn {
+  color: var(--amber-text);
+}
+
+#hud-f-completeness-chip.hc-bad {
+  color: var(--bad-text);
+}
+
+@keyframes hc-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.18);
+  }
+}
+
+#hud-f-completeness-chip.hc-pulse-once {
+  animation: hc-pulse 0.6s ease-in-out 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #hud-f-completeness-chip.hc-pulse-once {
+    animation: none;
+  }
+}

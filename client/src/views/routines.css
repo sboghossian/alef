@@ -1,0 +1,30 @@
+/* 🏭 Routines (routines.ts): one centred column on the cream page; the rows themselves are the
+   shared .routines-list (style.css), the same as the rail's Controls › Routines pane. Tokens only. */
+.view-routines .rt-root {
+  height: 100%;
+  overflow-y: auto;
+  padding: 22px 26px 64px;
+  box-sizing: border-box;
+  color: var(--ink);
+  font-size: var(--fs-body);
+}
+.view-routines .rt-head,
+.view-routines .rt-list,
+.view-routines .alef-state {
+  max-width: 760px;
+  margin-inline: auto;
+}
+.view-routines .rt-title {
+  margin: 0;
+  font-family: var(--display);
+}
+.view-routines .rt-sub {
+  margin: 6px 0 18px;
+  opacity: 0.75;
+}
+.view-routines .rt-list {
+  padding: 8px 14px;
+  border: var(--ch-bw) solid var(--ink);
+  border-radius: var(--ch-r-pane);
+  background: var(--paper);
+}

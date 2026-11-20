@@ -1,0 +1,432 @@
+/* 🗄️ Shelf (shelf.ts): pinned shelves (one horizontal row per section) above the "Found in
+   sessions" grid; .sv-panel is the ONE contextual details panel, docked at the right edge like
+   Projects. Bright cream page, ink outlines. Sidebar bits (.sv-side-form, .sv-sections) live in the
+   left sidebar, outside root, so they carry their own classes. */
+.view-library .sv-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin-bottom: 12px;
+}
+.view-library .sv-h1 {
+  margin: 0;
+  font: 900 var(--fs-xl)/1.2 var(--display);
+}
+.view-library .sv-sub,
+.view-library .sv-note,
+.view-library .sv-empty {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 700;
+}
+.view-library .sv-shelf {
+  margin-bottom: 14px;
+  padding: 8px 10px 10px;
+  border: 2px dashed transparent;
+  border-radius: 16px;
+  background: linear-gradient(transparent calc(100% - 8px), var(--line) calc(100% - 8px));
+}
+.view-library .sv-shelf.is-drop {
+  border-color: var(--ink);
+  background-color: var(--yellow-wash);
+}
+.view-library .sv-shelf-h,
+.view-library .sv-found-h {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 0 0 8px;
+  font: 900 var(--fs-md)/1.2 var(--display);
+}
+.view-library .sv-shelf-h small {
+  color: var(--muted);
+  font: 800 var(--fs-sm)/1 var(--body);
+}
+.view-library .sv-track {
+  position: relative;
+  min-width: 0;
+}
+.view-library .sv-row {
+  position: relative;
+  display: flex;
+  gap: 12px;
+  min-height: 60px;
+  padding: 2px 4px 14px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 4px;
+  scrollbar-width: thin;
+}
+/* "N more →" / "←": over the row's ends, on a fade, so a clipped card reads as "there is more". */
+.view-library .sv-nav {
+  position: absolute;
+  top: 0;
+  bottom: 14px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  border: 0;
+  padding: 0 4px 0 28px;
+  background: linear-gradient(90deg, transparent, var(--cream) 26px);
+  color: var(--ink);
+  font: 900 var(--fs-sm)/1 var(--body);
+  cursor: pointer;
+}
+.view-library .sv-nav[hidden] {
+  display: none;
+}
+.view-library .sv-nav.is-more {
+  right: 0;
+}
+.view-library .sv-nav.is-back {
+  left: 0;
+  padding: 0 28px 0 4px;
+  background: linear-gradient(270deg, transparent, var(--cream) 26px);
+  font-size: var(--fs-md);
+}
+.view-library .sv-nav:hover,
+.view-library .sv-nav:focus-visible {
+  text-decoration: underline;
+  outline: none;
+}
+.view-library .sv-row .sv-card {
+  flex: 0 0 200px;
+  scroll-snap-align: start;
+}
+.view-library .sv-row .sv-empty {
+  align-self: center;
+}
+.view-library .sv-found {
+  margin-top: 22px;
+}
+.view-library .sv-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.view-library .sv-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-card, 14px);
+  background: var(--paper);
+  box-shadow: var(--ch-sh-md);
+  cursor: pointer;
+}
+.view-library .sv-card:hover,
+.view-library .sv-card:focus-visible {
+  transform: translate(-1px, -1px);
+  box-shadow: var(--ch-sh-lg);
+  outline: none;
+}
+.view-library .sv-card.is-dragging {
+  opacity: 0.5;
+}
+.view-library .sv-card.is-artifact { border-top: 6px solid var(--pink); }
+.view-library .sv-card.is-dashable { border-top: 6px solid #2ec4b6; }
+.view-library .sv-card.is-github { border-top: 6px solid var(--ink); }
+.view-library .sv-card.is-linear { border-top: 6px solid var(--violet); }
+.view-library .sv-card.is-link { border-top: 6px solid #3aa0ff; }
+.view-library .sv-card.is-folder,
+.view-library .sv-card.is-file { border-top: 6px solid var(--yellow); }
+.view-library .sv-card-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+.view-library .sv-type {
+  flex: none;
+  font-size: var(--fs-md);
+}
+.view-library .sv-kind {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  padding: 1px 7px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 800 var(--fs-xs)/1.3 var(--body);
+}
+.view-library .sv-dot {
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+}
+.view-library .sv-dot.is-up { background: var(--ok); }
+.view-library .sv-dot.is-down { background: var(--bad); }
+.view-library .sv-star {
+  flex: none;
+  margin-left: auto;
+  min-width: 28px;
+  min-height: 28px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: 900 var(--fs-lg)/1 var(--body);
+  cursor: pointer;
+}
+.view-library .sv-star.is-on {
+  color: var(--amber);
+}
+.view-library .sv-menu-btn {
+  flex: none;
+  min-width: 28px;
+  min-height: 28px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--ink);
+  font: 900 var(--fs-lg)/1 var(--body);
+  cursor: pointer;
+}
+.view-library .sv-star + .sv-menu-btn {
+  margin-left: -4px;
+}
+.view-library .sv-menu-btn:hover,
+.view-library .sv-menu-btn:focus-visible {
+  background: var(--yellow-wash);
+  outline: none;
+}
+.view-library .sv-menu {
+  position: absolute;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  min-width: 180px;
+  max-width: min(260px, calc(100% - 16px));
+  max-height: min(360px, calc(100% - 16px));
+  overflow: auto;
+  padding: 6px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-md);
+}
+.view-library .sv-menu-h {
+  padding: 6px 8px 2px;
+  color: var(--muted);
+  font: 800 var(--fs-xs)/1.2 var(--body);
+  text-transform: uppercase;
+}
+.view-library .sv-menu-item {
+  min-height: 32px;
+  padding: 4px 8px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 700 var(--fs-body)/1.2 var(--body);
+  cursor: pointer;
+}
+.view-library .sv-menu-item:hover,
+.view-library .sv-menu-item:focus-visible {
+  background: var(--yellow-wash);
+  outline: none;
+}
+.view-library .sv-onshelves {
+  color: var(--amber);
+}
+.view-library .sv-chip {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 800 var(--fs-sm)/1 var(--body);
+  cursor: pointer;
+}
+.view-library .sv-chip.is-on {
+  background: var(--yellow-soft);
+}
+.view-library .sv-chip.is-on::before {
+  content: "★ ";
+  color: var(--amber);
+}
+.view-library .sv-title {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: 2.6em;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font: 900 var(--fs-md)/1.3 var(--display);
+}
+.view-library .sv-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-top: auto;
+  color: var(--muted);
+  font: 800 var(--fs-xs)/1.2 var(--body);
+}
+.view-library .sv-district {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.view-library .sv-typed {
+  color: var(--pink-text);
+}
+.sv-input {
+  min-height: 30px;
+  padding: 3px 6px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 var(--fs-sm)/1.2 var(--body);
+}
+.view-library .sv-more,
+.view-library .sv-btn,
+.view-library .sv-open,
+.view-library .sv-x,
+.sv-side-form .sv-btn,
+.sv-sections .sv-x {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-sm);
+  color: var(--ink);
+  font: 800 var(--fs-sm)/1 var(--body);
+  cursor: pointer;
+}
+.view-library .sv-more {
+  margin-top: 12px;
+  border-radius: 999px;
+}
+.view-library .sv-open {
+  display: inline-flex;
+  align-items: center;
+  background: var(--cyan-wash);
+  text-decoration: none;
+}
+.view-library .sv-panel {
+  position: absolute;
+  inset: 0 0 0 auto;
+  z-index: 5;
+  width: min(var(--sv-panel-w), 100%);
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border-left: 3px solid var(--ink);
+}
+.view-library .sv-panel[hidden] {
+  display: none;
+}
+.view-library .sv-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 10px 10px 16px;
+  background: var(--yellow-soft);
+  border-bottom: 3px solid var(--ink);
+  font: 800 var(--fs-md)/1.2 var(--display);
+  overflow-wrap: anywhere;
+}
+.view-library .sv-panel-title {
+  flex: 1;
+}
+.view-library .sv-panel-body {
+  flex: 1;
+  overflow: auto;
+  padding: 12px 16px 20px;
+}
+.view-library .sv-url {
+  margin: 8px 0;
+  color: var(--muted);
+  font: 700 var(--fs-sm)/1.35 var(--mono, monospace);
+  overflow-wrap: anywhere;
+}
+.view-library .sv-prow {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 0;
+  border-bottom: 2px dashed var(--line);
+}
+.view-library .sv-prow b {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  text-transform: uppercase;
+}
+.view-library .sv-h {
+  margin: 16px 0 6px;
+  font: 900 var(--fs-body)/1.2 var(--display);
+}
+.view-library .sv-pinrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+.view-library .sv-session {
+  display: block;
+  width: 100%;
+  margin-bottom: 4px;
+  padding: 6px 8px;
+  overflow: hidden;
+  border: 2px solid var(--ink);
+  border-radius: 9px;
+  background: var(--paper);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font: 700 var(--fs-sm)/1.3 var(--body);
+  cursor: pointer;
+}
+.sv-side-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sv-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.sv-sec-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.sv-sec-row .sv-input {
+  flex: 1;
+  min-width: 0;
+}
+.sv-sec-row small {
+  color: var(--muted);
+  font-weight: 800;
+}
+.sv-sec-fixed {
+  flex: 1;
+  font-weight: 800;
+}
+@media (max-width: 600px) {
+  .view-library .sv-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .view-library .sv-row .sv-card {
+    flex-basis: 176px; /* room for the kind pill beside ☆ and ⋯ */
+  }
+}

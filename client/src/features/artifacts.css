@@ -1,0 +1,123 @@
+/* The artifact gallery modal (features/artifacts-modal.ts). Scoped to .art-*. */
+.art-backdrop {
+  padding-top: 5vh;
+}
+.ui-dialog.art-card {
+  width: min(1180px, 100%);
+  height: min(86vh, 900px);
+  display: flex;
+  flex-direction: column;
+  padding: var(--s3) var(--s4) var(--s4);
+}
+.art-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(220px, 300px) 1fr;
+  gap: var(--s3);
+}
+.art-list {
+  overflow-y: auto;
+  border: 2.5px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--paper);
+  padding: var(--s2);
+}
+.art-month h4 {
+  margin: var(--s2) var(--s1) var(--s1);
+  font: 900 var(--fs-sm) var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+.art-month ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.art-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  min-height: var(--btn-h);
+  padding: 6px var(--s2);
+  border: 2px solid transparent;
+  border-radius: var(--r-btn);
+  background: none;
+  font: 700 var(--fs-body)/1.3 var(--body);
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+.art-row:hover,
+.art-row:focus-visible {
+  border-color: var(--ink);
+  background: var(--cream);
+}
+.art-row[aria-current="true"] {
+  border-color: var(--ink);
+  background: var(--yellow);
+}
+.art-row-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.art-row-badge {
+  flex: none;
+  font: 800 var(--fs-min) var(--body);
+  color: var(--muted);
+}
+.art-view {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+.art-name {
+  margin: 0;
+  font: 900 var(--fs-lg) var(--display);
+}
+.art-facts,
+.art-note {
+  margin: var(--s1) 0;
+  font: 600 var(--fs-body)/1.4 var(--body);
+  color: var(--muted);
+}
+.art-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+.art-frame,
+.art-empty {
+  flex: 1;
+  min-height: 240px;
+  width: 100%;
+  border: 2.5px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--paper);
+}
+.art-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--s4);
+  font: 700 var(--fs-md)/1.4 var(--body);
+  text-align: center;
+  background: var(--cream);
+}
+@media (max-width: 720px) {
+  .ui-dialog.art-card {
+    height: auto;
+    min-height: 86vh;
+  }
+  .art-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(140px, 32vh) 1fr;
+  }
+}

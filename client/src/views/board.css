@@ -1,0 +1,124 @@
+/* 📋 Board history (round 11, package D): day groups behind the History range switch (sidebar
+   filter). Scoped under .view-board so it never touches the shared #board-cols styling in
+   shell/shell.css (owned by the shell). Bright comic kit: cream cards, thick ink borders. */
+
+.view-board .board-history {
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.view-board .board-history-empty {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+
+.view-board .board-history-day {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.view-board .board-history-day-h {
+  margin: 0;
+  font: 900 var(--fs-body) var(--display);
+  text-transform: uppercase;
+  padding: 6px 8px;
+  border: 2.5px solid var(--ink);
+  border-radius: 9px;
+  background: var(--sky-wash);
+}
+
+.view-board .board-history-stat {
+  font: 700 var(--fs-xs) var(--body);
+  text-transform: none;
+  color: var(--muted);
+  margin-left: 6px;
+}
+
+.view-board .board-history-project {
+  padding-left: 4px;
+}
+
+.view-board .board-history-project-h {
+  margin: 0 0 6px;
+  font: 800 var(--fs-xs) var(--body);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.view-board .board-history-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 6px;
+}
+
+.view-board .board-history-list li button {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 7px 9px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-sm);
+  cursor: pointer;
+  font-family: var(--body);
+  color: var(--ink);
+}
+
+.view-board .board-history-list li button:hover {
+  background: var(--yellow);
+}
+
+/* Selected like a card in the columns above it (shell.css): ink, not yellow. */
+.view-board .board-history-list li button.b-sel {
+  background: var(--ch-on);
+  color: var(--ch-on-ink);
+  box-shadow: var(--ch-sh-md);
+}
+.view-board .board-history-list li button.b-sel .b-meta {
+  color: var(--ch-on-ink);
+}
+
+.view-board .board-history-todo {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  color: var(--sky);
+}
+
+/* Outcome chip: one small glyph after a card's title (round 2, graduation-badges). */
+.view-board .b-outcome {
+  font-size: var(--fs-sm);
+}
+
+/* "Draft a fix" under a stale card (ui/draft-fix.ts): undo the card-button look .b-col li button
+   gives every button in a column, so it reads as a small action, not a second card. */
+.view-board .b-col li button.b-fix {
+  width: auto;
+  display: inline-block;
+  margin: 4px 0 0 auto;
+  padding: 0 var(--s2);
+  border: var(--ch-bw-hair) solid var(--ink);
+  border-radius: var(--ch-r-chip);
+  background: var(--ch-soft);
+  box-shadow: none;
+  font: 700 var(--fs-xs) var(--body);
+}
+
+.view-board .b-col li button.b-fix:hover {
+  background: var(--ch-hover);
+}
+
+.view-board .b-col li:has(> .b-fix) {
+  display: flex;
+  flex-direction: column;
+}

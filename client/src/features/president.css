@@ -1,0 +1,125 @@
+/* Round 10 — "Jev proposes" (Inbox section) + the Settings "Merged districts" row.
+   Scoped to .pres-* only; reuses the comic-kit tokens from client/src/style.css. */
+
+.pres-h {
+  margin-top: 14px;
+}
+
+.pres-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pres-row {
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--paper);
+  box-shadow: var(--ch-sh-md);
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pres-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pres-task {
+  font-size: var(--fs-body);
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.pres-meta {
+  font: 900 var(--fs-xs) var(--display);
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.pres-why {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+.pres-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pres-btn {
+  min-height: var(--btn-h);
+  padding: 0 10px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  font-weight: 800;
+  font-size: var(--fs-min);
+  cursor: pointer;
+}
+
+.pres-btn:hover {
+  background: var(--yellow);
+}
+
+.pres-btn-primary {
+  background: var(--yellow);
+}
+
+.pres-btn-primary:hover {
+  background: var(--pink);
+  color: var(--paper);
+}
+
+/* Commencement (agent-city piece 5): graduation actions under the session/merge list, then the
+   record line that closes the section. */
+.pres-sub {
+  margin: 12px 0 6px;
+  font: 900 var(--fs-xs) var(--display);
+  text-transform: uppercase;
+}
+
+.pres-task-text summary {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.pres-task-text pre {
+  margin: 4px 0 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: var(--fs-xs);
+  max-height: 180px;
+  overflow: auto;
+}
+
+.pres-note {
+  align-self: center;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+.pres-record {
+  margin: 10px 0 0;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+
+/* ?redact=1 (client/src/redact.ts): task/why text is free text from real todo.md/health/loop
+   data the store doesn't own, so it's blurred for public screenshots the same way the Feed,
+   1:1 and Room free text already is (style.css's body.alef-redact block) — kept here instead
+   of editing that shared file, since this class only this feature ever renders. */
+body.alef-redact .pres-task,
+body.alef-redact .pres-why,
+body.alef-redact .pres-meta,
+body.alef-redact .pres-task-text {
+  filter: blur(5px);
+}

@@ -1,0 +1,140 @@
+#!/bin/bash
+# alef-live: run the LIVE Alef from a stable checkout (~/.alef-live), not from the dev checkout
+# under `tsx watch`. Every edit in ~/Documents/Code/agent-world restarted the live server before
+# (139 restarts since 09-24) and dropped clicks that were in flight. Decision 3a (Alex, 2026-09-28).
+#
+#   alef-live status     which processes serve :5178 / :5179, and from where
+#   alef-live start      start the server (:5179, no watch) and the client (:5178) from ~/.alef-live
+#   alef-live stop       stop only the processes started by this script (pid files)
+#   alef-live restart    stop + start
+#   alef-live deploy     fetch origin/main, move ~/.alef-live to it, restart (the loop's "make it live")
+#
+# data/ in the stable checkout is a symlink to the dev checkout's data/, so all state is shared.
+# Logs: ~/Library/Logs/alef/{server,client}.log (rotated at start when > 20 MB).
+set -uo pipefail
+DEV="$HOME/Documents/Code/agent-world"
+LIVE="$HOME/.alef-live"
+RUN="$HOME/.alef-live-run"
+LOGS="$HOME/Library/Logs/alef"
+mkdir -p "$RUN" "$LOGS"
+
+rotate() { local f="$1"; if [ -f "$f" ] && [ "$(stat -f %z "$f")" -gt 20971520 ]; then mv "$f" "$f.1"; fi; }
+alive() { [ -f "$1" ] && kill -0 "$(cat "$1")" 2>/dev/null; }
+
+ensure_checkout() {
+  if [ ! -d "$LIVE/.git" ] && [ ! -f "$LIVE/.git" ]; then
+    git -C "$DEV" fetch -q origin
+    git -C "$DEV" worktree add --detach "$LIVE" origin/main >/dev/null
+  fi
+  [ -e "$LIVE/node_modules" ] || ln -s "$DEV/node_modules" "$LIVE/node_modules"
+  [ -e "$LIVE/data" ] || ln -s "$DEV/data" "$LIVE/data"
+}
+
+start() {
+  ensure_checkout
+  # Half-alive (server crashed, vite still up) used to return "already running" forever, so the
+  # watchdog's start was a no-op (2026-10-14: 09:27 SIGBUS, down until a manual restart). Stop the orphan first.
+  if ! alive "$RUN/server.pid" && alive "$RUN/client.pid"; then echo "server dead, client alive: stopping the client first"; stop; fi
+  if alive "$RUN/server.pid" || alive "$RUN/client.pid"; then echo "already running (alef-live status)"; return 0; fi
+  if lsof -nP -iTCP:5179 -sTCP:LISTEN >/dev/null 2>&1 || lsof -nP -iTCP:5178 -sTCP:LISTEN >/dev/null 2>&1; then
+    echo "ports 5178/5179 are held by processes this script didn't start; see: alef-live status"; return 1
+  fi
+  rotate "$LOGS/server.log"; rotate "$LOGS/client.log"
+  # A launchd start (the watchdog) has no login shell, so Jev's key isn't in the environment. Read
+  # only TYPESAFE_API_KEY from the file Jev's other tools already use (mode 600); never print it.
+  if [ -z "${TYPESAFE_API_KEY:-}" ] && [ -r "$HOME/.config/brain-server/.env" ]; then
+    k=$(grep -m1 '^TYPESAFE_API_KEY=' "$HOME/.config/brain-server/.env" | cut -d= -f2- | sed -e 's/^["'\'']//' -e 's/["'\'']$//')
+    [ -n "$k" ] && export TYPESAFE_API_KEY="$k"
+    unset k
+  fi
+  # DNS runs on the libuv threadpool, so one blocked file read can starve it. 2026-10-26: four
+  # credential-scan reads wedged in pread on iCloud-evicted files took all 4 default slots, and
+  # every Jev call in the router then timed out at 1.5 s without ever opening a socket. The scan no
+  # longer reads a dataless file; this is the headroom, so a slow read can never cost DNS again.
+  export UV_THREADPOOL_SIZE="${UV_THREADPOOL_SIZE:-16}"
+  # </dev/null + full redirection so the children never hold the caller's pipes (a piped `alef-live start` used to hang).
+  (cd "$LIVE" && nohup ./node_modules/.bin/tsx server/index.ts </dev/null >>"$LOGS/server.log" 2>&1 & echo $! >"$RUN/server.pid")
+  (cd "$LIVE" && nohup ./node_modules/.bin/vite </dev/null >>"$LOGS/client.log" 2>&1 & echo $! >"$RUN/client.pid")
+  for _ in $(seq 1 60); do
+    [ "$(curl -s -m 5 -o /dev/null -w '%{http_code}' localhost:5179/api/health)" = 200 ] && break; sleep 1
+  done
+  status
+}
+
+stop() {
+  for p in server client; do
+    if alive "$RUN/$p.pid"; then
+      pid=$(cat "$RUN/$p.pid"); pkill -TERM -P "$pid" 2>/dev/null; kill -TERM "$pid" 2>/dev/null
+      for _ in $(seq 1 20); do kill -0 "$pid" 2>/dev/null || break; sleep 0.5; done
+    fi
+    rm -f "$RUN/$p.pid"
+  done
+  # Wait until the ports are really free (children exit after their parent). A listener that is still
+  # ours (cwd = the live checkout) gets TERM and then SIGKILL; never touch a listener from anywhere
+  # else. tsx IGNORES SIGTERM, so TERM alone made this return 0 with the port still held: 2026-10-26
+  # a deploy left :5179 holding the socket and answering nothing while the client stayed down.
+  for _ in $(seq 1 30); do
+    lsof -nP -iTCP:5178,5179 -sTCP:LISTEN -t >/dev/null 2>&1 || return 0
+    sleep 0.5
+  done
+  for sig in TERM KILL; do
+    for pid in $(lsof -nP -iTCP:5178,5179 -sTCP:LISTEN -t 2>/dev/null); do
+      if [ "$(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | grep ^n | cut -c2-)" = "$LIVE" ]; then
+        echo "stop: port still held by our pid $pid, sending SIG$sig"
+        kill -"$sig" "$pid" 2>/dev/null
+      fi
+    done
+    for _ in $(seq 1 10); do
+      lsof -nP -iTCP:5178,5179 -sTCP:LISTEN -t >/dev/null 2>&1 || return 0
+      sleep 0.5
+    done
+  done
+  # Still held: either a listener that is not ours, or one that survived SIGKILL. Say so and fail,
+  # rather than returning 0 and letting deploy move the checkout out from under a live server.
+  echo "stop: FAILED -- 5178/5179 are still held; nothing was stopped cleanly" >&2
+  status >&2
+  return 1
+}
+
+status() {
+  echo "live checkout: $(git -C "$LIVE" log -1 --format='%h %s' 2>/dev/null || echo 'none')"
+  for port in 5179 5178; do
+    pid=$(lsof -nP -iTCP:$port -sTCP:LISTEN -t 2>/dev/null | head -1)
+    if [ -n "$pid" ]; then echo ":$port pid $pid cwd $(lsof -a -p "$pid" -d cwd -Fn 2>/dev/null | grep ^n | cut -c2-)"; else echo ":$port not listening"; fi
+  done
+  # -m 5 on both: a port that listens without answering (a half-dead server) hung status forever.
+  echo "api: $(curl -s -m 5 -o /dev/null -w '%{http_code}' localhost:5179/api/health)  client: $(curl -s -m 5 -o /dev/null -w '%{http_code}' localhost:5178/)"
+}
+
+deploy() {
+  ensure_checkout
+  git -C "$DEV" fetch -q origin
+  # Stop BEFORE moving the checkout. The old order (checkout, then stop, then start) left the live
+  # tree on the new commit with nothing serving it whenever stop could not free the ports: on
+  # 2026-10-26 stop returned 0 with tsx still on :5179, start refused the held ports, and the
+  # client stayed down. Aborting here leaves the running server untouched on the old commit.
+  if ! stop; then
+    echo "deploy: ABORTED -- could not stop the running server. Checkout untouched at $(git -C "$LIVE" log -1 --format='%h %s' 2>/dev/null)" >&2
+    return 1
+  fi
+  if ! git -C "$LIVE" checkout -q --detach origin/main; then
+    echo "deploy: FAILED -- checkout to origin/main failed and nothing is running. Run: alef-live start" >&2
+    return 1
+  fi
+  start
+  # start exits 0 even when its 60 s health loop never saw a 200, so assert it here: a deploy that
+  # reports success while :5179 is dead is the failure mode this whole function exists to avoid.
+  if [ "$(curl -s -m 5 -o /dev/null -w '%{http_code}' localhost:5179/api/health)" != 200 ]; then
+    echo "deploy: FAILED -- now on $(git -C "$LIVE" log -1 --format=%h) but :5179 is not answering. Alef is DOWN; see $LOGS/server.log" >&2
+    return 1
+  fi
+}
+
+case "${1:-status}" in
+  start) start ;;
+  stop) stop; rc=$?; status; exit $rc ;;
+  restart) stop || { echo "restart: ABORTED -- could not stop; nothing was restarted" >&2; exit 1; }; start ;;
+  deploy) deploy ;;
+  status) status ;;
+  *) echo "usage: alef-live {status|start|stop|restart|deploy}"; exit 2 ;;
+esac

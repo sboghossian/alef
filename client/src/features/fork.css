@@ -1,0 +1,140 @@
+/* H4 fork: the Git section in the agent panel + the PR chip over a house. Scoped to .fk-*. */
+.fx-fork .fk-head {
+  margin: 0 0 6px;
+}
+.fx-fork .fk-sub {
+  margin: 10px 0 4px;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+.fx-fork .fk-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0;
+  font-size: var(--fs-body);
+  min-width: 0;
+}
+.fx-fork .fk-branch {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.fx-fork .fk-ab,
+.fx-fork .fk-muted {
+  color: var(--muted);
+}
+.fx-fork .fk-dirty {
+  color: var(--amber-text);
+  font-weight: 700;
+}
+.fx-fork .fk-clean {
+  color: var(--ok-text);
+}
+.fx-fork .fk-prlink {
+  color: var(--sky);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+.fk-badge {
+  padding: 0 6px;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+  font-size: var(--fs-xs);
+  white-space: nowrap;
+}
+.fk-state-open {
+  background: var(--ok-wash);
+}
+.fk-state-merged {
+  background: var(--sky-wash);
+}
+.fk-state-closed {
+  background: var(--pink-wash);
+}
+.fk-checks-success {
+  background: var(--ok-wash);
+}
+.fk-checks-failure {
+  background: var(--pink-wash);
+}
+.fk-checks-pending {
+  background: var(--yellow-wash);
+}
+.fx-fork .fk-repo {
+  max-width: 100%;
+  margin: 0 0 6px;
+}
+.fx-fork .fk-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+}
+.fx-fork .fk-check {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--fs-sm);
+}
+.fx-fork .fk-refused {
+  margin: 0;
+  font-size: var(--fs-sm);
+  overflow-wrap: anywhere;
+}
+.fx-fork .fk-btn {
+  min-height: var(--btn-h);
+  padding: 0 12px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--yellow);
+  color: var(--ink);
+  box-shadow: var(--ch-sh-sm);
+  font-weight: 700;
+  cursor: pointer;
+}
+.fx-fork .fk-btn:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.fx-fork .fk-btn-small {
+  min-height: 24px;
+  padding: 0 8px;
+  background: var(--paper);
+  font-size: var(--fs-sm);
+}
+.fx-fork .fk-forks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.fx-fork .fk-forks li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 3px 0;
+  font-size: var(--fs-sm);
+}
+.fx-fork .fk-fork {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  overflow-wrap: anywhere;
+}
+/* Sits above the todo card's anchor (.td-card uses margin-top -64px). */
+.fk-chip {
+  margin: -94px 0 0 -18px;
+  padding: 1px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-sm);
+  color: var(--ink);
+  font: 700 var(--fs-xs) var(--body);
+  white-space: nowrap;
+}
+body.aw-focus #fx-layer .fk-chip {
+  display: none !important;
+}

@@ -1,0 +1,117 @@
+/* Station chip (shared/stations.ts): the same tool-station id -> {emoji, colour, label}
+   everywhere (Feed, Canvas, Harness City). A small colour-coded pill on each activity / caption
+   row; the full description sits in its native tooltip (title attr). */
+.alef-feed-station {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: none;
+  padding: 1px 6px;
+  margin-top: 1px;
+  border: var(--ch-bw) solid var(--sc, var(--ink));
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: var(--sc, var(--ink));
+  background: var(--paper);
+  white-space: nowrap;
+}
+
+/* The Town square's top 5 (features/workspace-lib.ts) above the chips: what cleared the salience
+   bar right now, each with its one-line reason. Reuses the feed row's own classes for layout (and
+   for the ?redact=1 blur of .alef-feed-title). */
+.alef-feed-top {
+  margin-bottom: 10px;
+}
+.alef-feed-top-title {
+  margin: 0 0 6px;
+  font-family: var(--display);
+  font-size: 13px;
+}
+.alef-feed-top-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 5px;
+}
+.alef-feed-top-item {
+  border: var(--ch-bw-hair) solid var(--ch-seam-deep);
+  border-left: var(--ch-stripe) solid var(--k, var(--ch-seam-deep));
+  border-radius: var(--ch-r-out);
+  background: var(--paper);
+  overflow: hidden;
+}
+.alef-feed-top-item.u-waiting {
+  --k: var(--yellow);
+}
+.alef-feed-top-item.u-failure {
+  --k: var(--pink);
+}
+.alef-feed-top-item.u-tripwire {
+  --k: var(--sky);
+}
+.alef-feed-top-reason {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+.alef-feed-top-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--fs-min);
+}
+/* The kind stripe (shell.css draws it from --k): palette colours only, so a theme carries. What
+   needs you is hot, Jev and lessons are violet, finished work is green, the rest stays a seam. */
+.alef-feed-item.k-approval {
+  --k: var(--pink);
+}
+.alef-feed-item.k-awaiting,
+.alef-feed-item.k-decision {
+  --k: var(--yellow);
+}
+.alef-feed-item.k-tripwire,
+.alef-feed-item.k-report {
+  --k: var(--sky);
+}
+.alef-feed-item.k-graduation,
+.alef-feed-item.k-routine {
+  --k: var(--ok-text);
+}
+.alef-feed-item.k-system,
+.alef-feed-item.k-caption {
+  --k: var(--muted);
+}
+
+/* A raw tool line (a Bash command, an edited path): ONE monospace line, cut with an ellipsis. The
+   full text is in the row's title attribute (feed-ui.ts). */
+.alef-feed-item.cmd .alef-feed-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  font: 600 var(--fs-min) / 1.5 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+/* An approval decision in flight / refused (feed-hold.ts FeedSends): the row stays open and says
+   so, instead of reading "Approved" before the server answered. */
+.alef-feed-send {
+  margin: 0 9px 8px 32px;
+  font: 800 var(--fs-min) var(--body);
+}
+.alef-feed-send.sending {
+  color: var(--muted);
+}
+.alef-feed-send.failed {
+  padding: 3px 7px;
+  border: var(--ch-bw-hair) solid var(--ink);
+  border-radius: var(--ch-r-tag);
+  background: #ffe3e3;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.alef-feed-actions .alef-hold:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}

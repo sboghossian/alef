@@ -1,0 +1,49 @@
+/* Alef's "Shall I…?" card: a mutating action waits here for a spoken yes or a click (30 s). */
+
+.alef-confirm {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--alef-bottom, 34px) + var(--alef-prompt, 0px) + 18px);
+  transform: translateX(-50%);
+  z-index: 60;
+  width: min(440px, calc(100vw - 32px));
+  padding: 10px 14px 12px;
+  background: var(--cream);
+  color: var(--ink);
+  border: 3px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: var(--ch-sh-lg);
+  animation: alef-confirm-pop 0.18s ease-out;
+}
+
+.alef-confirm-kicker {
+  font: 900 var(--fs-sm) var(--display);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.alef-confirm-text {
+  margin: 4px 0 2px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.alef-confirm-how {
+  font-size: var(--fs-min, var(--fs-sm));
+  color: var(--muted);
+}
+
+.alef-confirm-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+@keyframes alef-confirm-pop {
+  from { transform: translateX(-50%) scale(0.92); opacity: 0; }
+  to { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alef-confirm { animation: none; }
+}

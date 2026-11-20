@@ -1,0 +1,97 @@
+/* P2 Tidy up (cleanup): renders in the side panel and in P3's Health "Tidy up" tab. Scoped to .cu-*. */
+
+.cu-root { display: flex; flex-direction: column; gap: 12px; color: var(--ink); font: 500 var(--fs-body) var(--body); }
+.cu-root.cu-busy { cursor: progress; }
+
+.cu-card {
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card, 14px);
+  background: var(--paper);
+  box-shadow: var(--ch-sh-md);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+.cu-hero { background: var(--yellow-wash); }
+.cu-h { margin: 0; font: 900 var(--fs-lg) var(--display); }
+.cu-disk { margin: 0; line-height: 1.4; }
+.cu-note {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 6px 8px; border: 2px dashed var(--ink); border-radius: 10px; background: var(--ok-wash);
+}
+.cu-error { margin: 0; color: var(--pink-text); font-weight: 700; }
+
+.cu-cardhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.cu-cardtitle { display: flex; align-items: center; gap: 8px; font: 800 var(--fs-md) var(--body); min-width: 0; overflow-wrap: anywhere; }
+.cu-emoji { font-size: var(--fs-lg); }
+.cu-blurb { margin: 0; color: var(--muted); font-size: var(--fs-min); line-height: 1.4; }
+.cu-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.cu-btn {
+  min-height: var(--btn-h);
+  padding: 0 12px;
+  border: 2.5px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--ch-sh-sm);
+  font: 800 var(--fs-body) var(--body);
+  cursor: pointer;
+}
+.cu-btn:hover { background: var(--yellow-wash); }
+.cu-btn:active { transform: translate(1px, 1px); box-shadow: var(--ch-sh-sm); }
+.cu-btn:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
+.cu-busy .cu-btn { pointer-events: none; opacity: 0.6; }
+.cu-primary { background: var(--yellow); }
+.cu-primary:hover { background: var(--yellow-soft); }
+.cu-danger { background: var(--pink); color: var(--paper); }
+.cu-danger:hover { background: var(--pink); }
+.cu-small { min-height: 32px; padding: 0 10px; font-size: var(--fs-min); }
+.cu-selall { align-self: flex-start; }
+
+.cu-chips { display: flex; flex-wrap: wrap; gap: 10px 16px; }
+.cu-chipgroup { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.cu-chiplabel { font: 800 var(--fs-min) var(--body); color: var(--muted); }
+.cu-chip { min-height: 32px; border-radius: 999px; padding: 0 10px; font-size: var(--fs-min); }
+.cu-chip.on { background: var(--sky); color: var(--paper); }
+
+.cu-confirm {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  padding: 8px; border: 2.5px solid var(--ink); border-radius: 10px; background: var(--pink-wash);
+  font-weight: 700;
+}
+
+.cu-list { display: flex; flex-direction: column; gap: 6px; max-height: 420px; overflow-y: auto; padding-right: 2px; }
+.cu-row {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 6px 8px; border: 2px solid var(--ink); border-radius: 10px; background: var(--cream);
+  cursor: pointer; min-width: 0;
+}
+.cu-row input[type="checkbox"] { width: 18px; height: 18px; margin: 2px 0 0; flex: none; accent-color: var(--sky); cursor: pointer; }
+.cu-rowbody { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.cu-title { font-weight: 800; overflow-wrap: anywhere; }
+.cu-meta { font-size: var(--fs-min); color: var(--muted); overflow-wrap: anywhere; }
+.cu-why { font-size: var(--fs-min); font-weight: 700; color: var(--amber-text); }
+.cu-protected { background: var(--line-cool); border-style: dashed; cursor: default; opacity: 0.8; }
+.cu-protected input { cursor: not-allowed; }
+
+.cu-footer {
+  position: sticky; bottom: 0; z-index: 1;
+  display: flex; flex-wrap: wrap; gap: 8px; padding: 8px;
+  border: 3px solid var(--ink); border-radius: 12px; background: var(--paper);
+  box-shadow: var(--ch-sh-md);
+}
+
+.cu-batch { display: flex; flex-direction: column; gap: 6px; padding: 6px 0; border-top: 2px dashed var(--line-cool); }
+.cu-batch:first-of-type { border-top: none; }
+.cu-batchhead { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; }
+
+.cu-undo {
+  position: fixed; left: 50%; bottom: calc(var(--alef-bottom, 34px) + 16px); transform: translateX(-50%);
+  z-index: 60; display: flex; align-items: center; gap: 12px; max-width: calc(100vw - 32px);
+  padding: 8px 10px 8px 14px; border: 3px solid var(--ink); border-radius: 14px;
+  background: var(--yellow); color: var(--ink); box-shadow: var(--ch-sh-lg);
+  font: 800 var(--fs-body) var(--body);
+}

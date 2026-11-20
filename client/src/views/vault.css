@@ -1,0 +1,788 @@
+/* 🗄️ Vault (vault.ts): a scrolling column of cards, one section at a time, on the same bright
+   cream page and ink outlines as Atlas and Library. Nine categorical series colours, five heat
+   steps, and three custom properties the view sets per element (--vv-bar, --vv-dot, --vv-x,
+   --vv-y) because a width, a folder colour and a label position cannot come from a stylesheet. */
+.view-vault .vv-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: linear-gradient(180deg, var(--paper) 0, var(--cream) 240px);
+  color: var(--ink);
+  font: var(--fs-body)/1.5 var(--body);
+}
+.view-vault .vv-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 22px 26px 64px;
+  box-sizing: border-box;
+}
+
+/* ---------------------------------------------------------------- heading */
+
+.view-vault .vv-head {
+  max-width: 980px;
+  margin: 0 auto 18px;
+}
+.view-vault .vv-title {
+  margin: 0;
+  font: 600 var(--fs-xl)/1.2 var(--display, var(--body));
+  letter-spacing: -0.01em;
+}
+.view-vault .vv-sub {
+  margin: 5px 0 0;
+  max-width: 62ch;
+  color: var(--muted);
+}
+
+.view-vault .vv-feed {
+  margin: 6px 0 0;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+
+.view-vault .vv-feed-stale {
+  color: var(--bad-text);
+  font-weight: 600;
+}
+.view-vault .vv-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+
+/* ---------------------------------------------------------------- stat tiles */
+
+.view-vault .vv-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+.view-vault .vv-stat {
+  padding: 12px 14px;
+  border: 1.5px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-soft);
+}
+.view-vault .vv-stat-value {
+  font: 600 var(--fs-xl)/1.1 var(--display, var(--body));
+  font-variant-numeric: tabular-nums;
+}
+.view-vault .vv-stat-label {
+  margin-top: 3px;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  text-transform: lowercase;
+}
+.view-vault .vv-stat-meta {
+  margin-top: 5px;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.view-vault .vv-stat-meta[data-dir="up"],
+.view-vault .vv-tag-meta[data-dir="up"] {
+  color: var(--ok-text);
+}
+.view-vault .vv-stat-meta[data-dir="down"],
+.view-vault .vv-tag-meta[data-dir="down"] {
+  color: var(--bad-text);
+}
+
+/* ---------------------------------------------------------------- cards */
+
+.view-vault .vv-card {
+  border: 1.5px solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-soft);
+  overflow: hidden;
+}
+.view-vault .vv-card-head {
+  padding: 12px 16px 0;
+}
+.view-vault .vv-card-title {
+  margin: 0;
+  font: 600 var(--fs-md)/1.3 var(--display, var(--body));
+}
+.view-vault .vv-card-hint {
+  margin: 3px 0 0;
+  max-width: 70ch;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+.view-vault .vv-card-body {
+  padding: 12px 16px 16px;
+}
+.view-vault .vv-note-line {
+  margin: 8px 0 0;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+.view-vault .vv-loading,
+.view-vault .vv-empty {
+  margin: 0;
+  color: var(--muted);
+}
+.view-vault .vv-error {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1.5px solid var(--bad-text);
+  border-radius: 8px;
+  background: var(--pink-wash);
+  color: var(--bad-text);
+}
+.view-vault .vv-drill:not(:empty) {
+  margin-top: 12px;
+}
+
+/* ---------------------------------------------------------------- charts */
+
+.view-vault .vv-chart {
+  display: block;
+  width: 100%;
+}
+.view-vault .vv-cal {
+  height: auto;
+  max-width: 760px;
+}
+.view-vault .vv-stack,
+.view-vault .vv-area,
+.view-vault .vv-stream {
+  height: 190px;
+}
+.view-vault .vv-scatter {
+  height: auto;
+  max-width: 760px;
+}
+.view-vault .vv-sc-grid {
+  stroke: rgba(40, 30, 80, 0.12);
+  stroke-width: 1;
+}
+.view-vault .vv-sc-tick {
+  font-size: var(--fs-xs);
+  fill: rgba(40, 30, 80, 0.6);
+}
+.view-vault .vv-grid {
+  height: auto;
+  max-width: 560px;
+}
+.view-vault .vv-spark {
+  width: 120px;
+  height: 24px;
+  flex: 0 0 auto;
+}
+.view-vault .vv-bands {
+  height: 270px;
+  flex: 1 1 auto;
+}
+.view-vault .vv-bar,
+.view-vault .vv-area-band,
+.view-vault .vv-stream-band,
+.view-vault .vv-band {
+  stroke: var(--ink);
+  stroke-width: 0.6;
+  vector-effect: non-scaling-stroke;
+}
+.view-vault .vv-area-band,
+.view-vault .vv-stream-band {
+  fill-opacity: 0.85;
+}
+.view-vault .vv-band {
+  fill-opacity: 0.55;
+}
+.view-vault .vv-band:hover {
+  fill-opacity: 0.9;
+}
+.view-vault .vv-spark-line {
+  fill: none;
+  stroke: var(--sky);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Five heat steps: cream, then the violet the rest of the planet uses. */
+.view-vault .vv-cal-cell {
+  stroke: rgb(26 16 48 / 18%);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+  fill: var(--cream);
+}
+.view-vault .vv-cal-cell[data-heat="1"] {
+  fill: var(--sky-wash);
+}
+.view-vault .vv-cal-cell[data-heat="2"] {
+  fill: #b9a4ea;
+}
+.view-vault .vv-cal-cell[data-heat="3"] {
+  fill: var(--violet);
+}
+.view-vault .vv-cal-cell[data-heat="4"] {
+  fill: var(--sky);
+}
+.view-vault .vv-pick {
+  cursor: pointer;
+}
+.view-vault .vv-pick:hover {
+  stroke: var(--ink);
+  stroke-width: 2;
+}
+
+/* Nine categorical series. The ninth is grey, which is where "Other" usually lands. */
+.view-vault .vv-s0 { fill: var(--sky); }
+.view-vault .vv-s1 { fill: var(--warn); }
+.view-vault .vv-s2 { fill: #1f9e8f; }
+.view-vault .vv-s3 { fill: var(--pink); }
+.view-vault .vv-s4 { fill: #3d82d9; }
+.view-vault .vv-s5 { fill: var(--amber); }
+.view-vault .vv-s6 { fill: #7aa63d; }
+.view-vault .vv-s7 { fill: var(--violet); }
+.view-vault .vv-s8 { fill: var(--idle); }
+
+.view-vault .vv-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.view-vault .vv-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: var(--fs-sm);
+}
+.view-vault .vv-swatch {
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  flex: 0 0 auto;
+}
+.view-vault .vv-swatch.vv-s0 { background: var(--sky); }
+.view-vault .vv-swatch.vv-s1 { background: var(--warn); }
+.view-vault .vv-swatch.vv-s2 { background: #1f9e8f; }
+.view-vault .vv-swatch.vv-s3 { background: var(--pink); }
+.view-vault .vv-swatch.vv-s4 { background: #3d82d9; }
+.view-vault .vv-swatch.vv-s5 { background: var(--amber); }
+.view-vault .vv-swatch.vv-s6 { background: #7aa63d; }
+.view-vault .vv-swatch.vv-s7 { background: var(--violet); }
+.view-vault .vv-swatch.vv-s8 { background: var(--idle); }
+.view-vault .vv-legend-label {
+  color: var(--ink);
+}
+.view-vault button.vv-legend-label {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  color: var(--sky);
+  cursor: pointer;
+  text-decoration: underline dotted;
+}
+
+/* A month axis under a bar chart: ticks sit at --vv-x across the full width. */
+.view-vault .vv-axis {
+  position: relative;
+  height: 15px;
+  margin-top: 3px;
+}
+.view-vault .vv-tick {
+  position: absolute;
+  left: var(--vv-x, 0%);
+  transform: translateX(-50%);
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------- bar lists */
+
+.view-vault .vv-bars,
+.view-vault .vv-notes,
+.view-vault .vv-plain,
+.view-vault .vv-tags,
+.view-vault .vv-chips,
+.view-vault .vv-trail {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.view-vault .vv-bar-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 22%) 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgb(26 16 48 / 7%);
+}
+.view-vault .vv-bar-row:last-child {
+  border-bottom: 0;
+}
+.view-vault .vv-bar-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.view-vault button.vv-bar-label {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  color: var(--sky);
+  text-align: left;
+  cursor: pointer;
+}
+.view-vault button.vv-bar-label:hover {
+  text-decoration: underline;
+}
+.view-vault .vv-bar-track {
+  height: 11px;
+  border-radius: 6px;
+  background: rgb(26 16 48 / 6%);
+  overflow: hidden;
+}
+.view-vault .vv-bar-fill {
+  width: var(--vv-bar, 0%);
+  height: 100%;
+  border-radius: 6px;
+  background: var(--sky);
+}
+.view-vault .vv-bar-fill[data-fresh="warm"] {
+  background: var(--amber);
+}
+.view-vault .vv-bar-fill[data-fresh="cold"] {
+  background: var(--idle);
+}
+.view-vault .vv-bar-n {
+  font-size: var(--fs-sm);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.view-vault .vv-bar-meta {
+  grid-column: 1 / -1;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+}
+/* A row with a "page" link keeps it on the meta line instead of a line of its own. */
+.view-vault .vv-bar-row:has(.vv-bar-open) .vv-bar-meta {
+  grid-column: 1 / 3;
+}
+.view-vault .vv-bar-open {
+  grid-column: 3;
+  justify-self: end;
+  font-size: var(--fs-xs);
+  color: var(--sky);
+}
+
+/* ---------------------------------------------------------------- note rows */
+
+.view-vault .vv-note {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgb(26 16 48 / 7%);
+}
+.view-vault .vv-note:last-child {
+  border-bottom: 0;
+}
+.view-vault .vv-note-dot {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: var(--vv-dot, var(--idle));
+  flex: 0 0 auto;
+  align-self: center;
+}
+.view-vault .vv-note-link {
+  color: var(--sky);
+  text-decoration: none;
+  font-weight: 500;
+}
+.view-vault .vv-note-link:hover {
+  text-decoration: underline;
+}
+.view-vault .vv-note-meta {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.view-vault .vv-note[data-band="dormant"] .vv-note-link,
+.view-vault .vv-note[data-band="occasional"] .vv-note-link {
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- weekday grid */
+
+.view-vault .vv-grid-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+.view-vault .vv-grid-rows {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex: 0 0 auto;
+}
+.view-vault .vv-grid-row {
+  height: 22px;
+  font-size: var(--fs-xs);
+  line-height: 20px;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- scatter */
+
+.view-vault .vv-dot {
+  stroke: var(--ink);
+  stroke-width: 0.8;
+  vector-effect: non-scaling-stroke;
+  fill: var(--idle);
+  fill-opacity: 0.8;
+}
+.view-vault .vv-dot[data-band="inner"] {
+  fill: var(--sky);
+}
+.view-vault .vv-dot[data-band="fading"] {
+  fill: var(--warn);
+}
+.view-vault .vv-dot[data-band="occasional"] {
+  fill: #1f9e8f;
+}
+
+/* ---------------------------------------------------------------- bands */
+
+.view-vault .vv-band-wrap {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+}
+.view-vault .vv-band-col {
+  position: relative;
+  width: 110px;
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.view-vault .vv-band-key {
+  position: absolute;
+  top: var(--vv-y, 0%);
+  transform: translateY(-50%);
+  font-size: var(--fs-xs);
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+.view-vault .vv-band-right .vv-band-key {
+  right: 0;
+  text-align: right;
+}
+
+/* ---------------------------------------------------------------- tags, chips, trails */
+
+.view-vault .vv-tag {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding: 3px 0;
+  border-bottom: 1px solid rgb(26 16 48 / 7%);
+}
+.view-vault .vv-tag:last-child {
+  border-bottom: 0;
+}
+.view-vault .vv-tag-name {
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  font-weight: 500;
+  color: var(--sky);
+  cursor: pointer;
+  min-width: 170px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.view-vault .vv-tag-name:hover {
+  text-decoration: underline;
+}
+.view-vault .vv-tag-meta {
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.view-vault .vv-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.view-vault .vv-chip {
+  padding: 2px 8px;
+  border: 1px solid rgb(26 16 48 / 25%);
+  border-radius: 999px;
+  background: var(--cream);
+  font-size: var(--fs-xs);
+}
+.view-vault .vv-plain-row,
+.view-vault .vv-dup {
+  padding: 3px 0;
+  border-bottom: 1px solid rgb(26 16 48 / 7%);
+}
+.view-vault .vv-dup-key {
+  font-weight: 500;
+}
+.view-vault .vv-trail {
+  counter-reset: step;
+}
+.view-vault .vv-trail-step {
+  position: relative;
+  padding: 3px 0 3px 22px;
+  counter-increment: step;
+}
+.view-vault .vv-trail-step::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 3px;
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--ink);
+  border-radius: 50%;
+  background: var(--sky-wash);
+  font-size: var(--fs-xs);
+  line-height: 14px;
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------- echoes header */
+
+.view-vault .vv-echo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.view-vault .vv-again {
+  padding: 4px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-soft);
+  font: inherit;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.view-vault .vv-again:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+/* ---------------------------------------------------------------- phone */
+
+@media (width <= 760px) {
+  .view-vault .vv-body {
+    padding: 16px 14px 56px;
+  }
+  .view-vault .vv-title {
+    font-size: var(--fs-xl);
+  }
+  .view-vault .vv-bar-row {
+    grid-template-columns: minmax(90px, 40%) 1fr auto;
+  }
+  .view-vault .vv-band-wrap {
+    flex-direction: column;
+  }
+  .view-vault .vv-band-col {
+    width: 100%;
+    height: 20px;
+  }
+  .view-vault .vv-band-key {
+    position: static;
+    transform: none;
+    display: inline;
+  }
+}
+
+/* ---------------------------------------------------------------- the four maps */
+
+.view-vault .vv-link-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: var(--sky);
+  cursor: pointer;
+  text-align: left;
+}
+.view-vault .vv-link-btn:hover {
+  text-decoration: underline;
+}
+
+/* Atlas */
+.view-vault .vv-crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: var(--fs-body);
+}
+.view-vault .vv-crumb-sep {
+  color: rgba(40, 30, 80, 0.45);
+}
+.view-vault .vv-treemap,
+.view-vault .vv-hubs {
+  height: auto;
+}
+.view-vault .vv-tm-cell {
+  cursor: pointer;
+}
+.view-vault .vv-tm-rect {
+  fill: color-mix(in srgb, var(--vv-dot, var(--idle)) 26%, var(--paper));
+  stroke: color-mix(in srgb, var(--vv-dot, var(--idle)) 70%, transparent);
+  stroke-width: 1;
+}
+.view-vault .vv-tm-cell:hover .vv-tm-rect,
+.view-vault .vv-tm-cell:focus-visible .vv-tm-rect {
+  fill: color-mix(in srgb, var(--vv-dot, var(--idle)) 42%, var(--paper));
+  stroke-width: 2;
+}
+.view-vault .vv-tm-label {
+  font-size: var(--fs-sm);
+  font-weight: 600;
+  fill: var(--ink);
+  pointer-events: none;
+}
+.view-vault .vv-tm-sub {
+  font-size: var(--fs-xs);
+  fill: rgba(40, 30, 80, 0.62);
+  pointer-events: none;
+}
+.view-vault .vv-tm-fresh {
+  fill: var(--ok-text);
+}
+
+/* Flows */
+.view-vault .vv-seg {
+  display: inline-flex;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.view-vault .vv-seg-btn {
+  background: transparent;
+  border: 0;
+  padding: 4px 12px;
+  font: inherit;
+  font-size: var(--fs-sm);
+  cursor: pointer;
+}
+.view-vault .vv-chord {
+  height: auto;
+  max-width: 600px;
+  margin: 0 auto;
+}
+.view-vault .vv-rib {
+  opacity: 0.5;
+  transition: opacity 0.15s;
+}
+.view-vault .vv-chord.vv-picked .vv-rib {
+  opacity: 0.07;
+}
+.view-vault .vv-chord.vv-picked .vv-rib.vv-on {
+  opacity: 0.75;
+}
+.view-vault .vv-arc {
+  cursor: pointer;
+}
+.view-vault .vv-arc.vv-on {
+  stroke: var(--ink);
+  stroke-width: 1.5;
+}
+.view-vault .vv-arc-label {
+  font-size: var(--fs-xs);
+  fill: rgba(40, 30, 80, 0.62);
+  cursor: pointer;
+}
+.view-vault .vv-arc-label.vv-on {
+  fill: var(--ink);
+  font-weight: 650;
+}
+
+/* Hubs */
+.view-vault .vv-hub {
+  fill: var(--vv-dot, var(--sky));
+  opacity: 0.55;
+  cursor: pointer;
+}
+.view-vault .vv-hub.vv-key {
+  opacity: 1;
+  stroke: var(--ink);
+  stroke-width: 1;
+}
+.view-vault .vv-hub-label,
+.view-vault .vv-star-label {
+  font-size: var(--fs-xs);
+  fill: var(--ink);
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 3px;
+  pointer-events: none;
+}
+
+/* Constellation */
+.view-vault .vv-constellation {
+  height: auto;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.view-vault .vv-tie {
+  stroke: var(--ink);
+  opacity: 0.18;
+  transition: opacity 0.15s;
+}
+.view-vault .vv-constellation.vv-hover .vv-tie {
+  opacity: 0.03;
+}
+.view-vault .vv-constellation.vv-hover .vv-tie.vv-on {
+  opacity: 0.75;
+}
+.view-vault .vv-star {
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+.view-vault .vv-star circle {
+  stroke: var(--paper);
+  stroke-width: 1.5;
+}
+.view-vault .vv-constellation.vv-hover .vv-star {
+  opacity: 0.2;
+}
+.view-vault .vv-constellation.vv-hover .vv-star.vv-on {
+  opacity: 1;
+}
+.view-vault .vv-star-label {
+  font-size: var(--fs-xs);
+}

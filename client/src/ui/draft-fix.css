@@ -1,0 +1,40 @@
+/* "Draft a fix" (ui/draft-fix.ts): one quiet button on every finding — the Fix queue, Health's
+   issues, Vault Gaps, the Board's stale cards. Chrome role tokens only (shell/chrome.css). */
+
+.fx-draft {
+  min-height: 26px;
+  padding: 0 var(--s2);
+  border: var(--ch-bw-hair) solid var(--ink);
+  border-radius: var(--ch-r-chip);
+  background: var(--ch-soft);
+  color: var(--ink);
+  font: 700 11px var(--body);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.fx-draft:hover {
+  background: var(--ch-hover);
+}
+
+.fx-draft:focus-visible {
+  outline: var(--ch-bw) solid var(--ink);
+  outline-offset: 1px;
+}
+
+.fx-draft:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* Inside a Vault Gaps bar row (a 3-column grid) or a missing-project chip. */
+.vv-bar-row > .fx-draft {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.vv-chip > .fx-draft {
+  min-height: 20px;
+  padding: 0 6px;
+  margin-left: 4px;
+}

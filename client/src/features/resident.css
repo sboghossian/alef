@@ -1,0 +1,48 @@
+/* Alef resident: panel (#panel) + its Inbox section (#res-inbox). Scoped to .res-* only;
+   reuses the comic-kit tokens from client/src/style.css. */
+
+.res { display: flex; flex-direction: column; gap: var(--s2, 8px); }
+.res-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.res-id { display: flex; align-items: baseline; gap: 8px; }
+.res-name { font: 900 var(--fs-md) var(--display); }
+.res-day { font: 900 var(--fs-xs) var(--display); text-transform: uppercase; color: var(--muted); }
+.res-note { margin: 0; font-size: var(--fs-min); color: var(--muted); }
+.res-error { margin: 0; padding: 6px 8px; border: 2px solid var(--ink); border-radius: var(--r-btn); background: var(--pink-wash); font-size: var(--fs-min); font-weight: 700; }
+.res-empty { margin: 0; font-size: var(--fs-min); color: var(--muted); font-style: italic; }
+.res-sec { margin: 6px 0 0; font: 900 var(--fs-xs) var(--display); text-transform: uppercase; }
+.res-h { margin-top: 14px; }
+
+.res-spend { position: relative; height: 22px; border: 3px solid var(--ink); border-radius: var(--r-btn); background: var(--paper); overflow: hidden; }
+.res-spend-bar { position: absolute; inset: 0; width: var(--pct); background: var(--yellow); }
+.res-spend span { position: relative; z-index: 1; padding-left: 6px; font: 800 var(--fs-xs) var(--body); line-height: 16px; }
+
+.res-goals { margin: 0; padding-left: 18px; font-size: var(--fs-body); }
+.res-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.res-chip { border: 2px solid var(--ink); border-radius: 999px; padding: 1px 8px; background: var(--cyan-wash); font: 700 var(--fs-xs) var(--body); }
+.res-journal { max-height: 180px; overflow: auto; border: 2px solid var(--ink); border-radius: var(--r-btn); background: var(--cream); padding: 6px 8px; font-size: var(--fs-sm); line-height: 1.4; }
+
+.res-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.res-row { border: 3px solid var(--ink); border-radius: var(--r-card); background: var(--paper); box-shadow: var(--ch-sh-md); padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; }
+.res-row-done { opacity: 0.6; box-shadow: none; }
+.res-meta { font: 900 var(--fs-xs) var(--display); text-transform: uppercase; color: var(--muted); }
+.res-title { font-size: var(--fs-body); font-weight: 800; line-height: 1.3; }
+.res-why { font-size: var(--fs-xs); color: var(--muted); }
+.res-status { font: 800 var(--fs-xs) var(--body); text-transform: uppercase; }
+.res-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.res-btn { min-height: var(--btn-h); padding: 0 10px; border: 2px solid var(--ink); border-radius: var(--r-btn); background: var(--paper); font-weight: 800; font-size: var(--fs-min); cursor: pointer; }
+.res-btn:hover { background: var(--yellow); }
+.res-btn-primary, .res-toggle.res-on { background: var(--yellow); }
+.res-btn-primary:hover { background: var(--pink); color: var(--paper); }
+
+.res-writes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; font-size: var(--fs-xs); }
+.res-w-when, .res-w-bytes { color: var(--muted); }
+.res-writes code, .res-note code { font-size: var(--fs-xs); }
+
+/* ?redact=1: model-written free text is blurred for public screenshots, like .pres-* */
+body.alef-redact .res-journal,
+body.alef-redact .res-goals,
+body.alef-redact .res-title,
+body.alef-redact .res-why,
+body.alef-redact .res-w-why {
+  filter: blur(5px);
+}

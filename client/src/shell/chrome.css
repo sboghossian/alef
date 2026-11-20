@@ -1,0 +1,135 @@
+/* THE CHROME: how heavy the frame around Alef is. Every hard drop-shadow, border weight and
+   corner radius in shell.css / sidebar.css / feed-ui.css reads from here, so the frame can be
+   made quieter or louder by moving a handful of numbers instead of editing ~120 declarations
+   scattered across three files.
+
+   This is weight and shape ONLY. The palette stays in style.css and is untouched: every shadow
+   below still draws in var(--ink) or var(--pink), so a theme that moves those moves these with
+   it. Nothing here is a colour of its own except the two seam tints, which are var(--ink) at
+   low alpha and have to be literal because CSS cannot add alpha to a hex var.
+
+   Two deliberate shapes are NOT tokens, because there is no dial in them: `border-radius: 50%`
+   means "a circle" and `999px` means "a pill". Naming those would add indirection and buy
+   nothing. Every radius measured in px is a token.
+
+   Imported by shell.ts next to shell.css. Order does not matter -- a custom property is
+   resolved at computed-value time, not at parse time, so var() in shell.css reads whatever
+   :root ends up holding. It is listed first for reading, not for the cascade.
+   Guarded by chrome.css.test.ts, which fails if a px literal creeps back into the shell CSS. */
+
+:root {
+  /* ------------------------------------------------- drop-shadow depth
+     The comic shadow is an offset, not a blur, so "depth" is just how far the surface is
+     shoved down-right in px. Four steps, smallest first. These four numbers are the main
+     dial: halve them and the whole interface goes quiet. */
+  --ch-d1: 2px; /* chips, small buttons, badges — the common case */
+  --ch-d2: 3px; /* raised surfaces: search, filters, the dispatch field, an open feed item */
+  --ch-d3: 4px; /* popovers floating over a sidebar */
+  --ch-d4: 5px; /* the one true card */
+
+  --ch-sh-sm: var(--ch-d1) var(--ch-d1) 0 var(--ink);
+  --ch-sh-md: var(--ch-d2) var(--ch-d2) 0 var(--ink);
+  --ch-sh-lg: var(--ch-d3) var(--ch-d3) 0 var(--ink);
+  --ch-sh-xl: var(--ch-d4) var(--ch-d4) 0 var(--ink);
+
+  /* Accent versions, for a field that has focus. Same depth, hot colour. */
+  --ch-sh-sm-hot: var(--ch-d1) var(--ch-d1) 0 var(--pink);
+  --ch-sh-md-hot: var(--ch-d2) var(--ch-d2) 0 var(--pink);
+  --ch-sh-lg-hot: var(--ch-d3) var(--ch-d3) 0 var(--pink);
+
+  /* A lift drawn in the seam tint instead of ink: a panel that sits on the page without
+     being one of its controls. */
+  --ch-sh-soft: var(--ch-d1) var(--ch-d1) 0 var(--ch-seam);
+
+  /* Mirrored, for a control on the right edge: the shadow has to fall away from the viewport
+     or it lands underneath the sidebar it is attached to. */
+  --ch-sh-sm-flip: calc(var(--ch-d1) * -1) var(--ch-d1) 0 var(--ink);
+
+  /* An inner ring instead of a shadow: used while a hold-to-confirm button is held down, so
+     the button reads as pressed in rather than lifted out. Matches the default border weight. */
+  --ch-sh-ring: inset 0 0 0 var(--ch-bw) var(--ink);
+
+  /* ------------------------------------------------- seams
+     Where a fixed surface meets the one behind it (top bar over the view, drawer under the
+     status bar, panel beside the world) there is no lift to show — only a seam. These are
+     directional, soft, and tinted rather than inked, so they read as a join and not an edge. */
+  --ch-seam: rgba(26, 16, 48, 0.09);
+  --ch-seam-deep: rgba(26, 16, 48, 0.14);
+
+  --ch-edge-down: 0 2px 0 var(--ch-seam); /* top bar, casting onto the view below it */
+  --ch-edge-up: 0 -3px 0 var(--ch-seam); /* data drawer, rising off the status bar */
+  --ch-edge-up-lift: 0 -5px 0 var(--ch-seam-deep); /* a phone sheet, further off the floor */
+  --ch-edge-left: -3px 0 0 var(--ch-seam); /* the world panel, against the canvas */
+
+  /* ------------------------------------------------- border weight
+     Three weights, hairline to bold, and three is the point: a frame reads as quiet when it
+     speaks in few weights, not when any one line is thin. There was a 2.5px step between
+     --ch-bw and --ch-bw-bold; it was doing no work the base weight could not do, so it is
+     gone and its 19 sites sit at 2px.
+     The colour is left at each site on purpose: some borders are var(--ink), some are
+     transparent placeholders that only colour on hover, and one takes the city colour via
+     var(--sc, var(--ink)). A composite `2px solid var(--ink)` token would hide that. */
+  --ch-bw-hair: 1.5px; /* a divider inside a panel */
+  --ch-bw: 2px; /* everything that has an outline */
+  --ch-bw-bold: 2.5px; /* the structural lines only: bar, rails, prompt, drawer, card */
+  --ch-stripe: 3px; /* a feed card's kind: a stripe down its left edge instead of a fill */
+
+  /* ------------------------------------------------- corner radii
+     One ramp, derived from the control radius. The odd numbers in it are not drift: a corner
+     nested inside another has to sit ~1px tighter per step or the border between them reads
+     as uneven, which is why 9 / 10 / 11 / 12 / 13 all exist and all matter. Moving --ch-r
+     moves the whole family and keeps those relationships intact. */
+  --ch-r: 10px; /* a control: badge, tab, theme button, inbox row, dispatch status */
+  /* a control nested inside another control */
+  --ch-r-in: calc(var(--ch-r) - 1px);
+  /* a control holding another one */
+  --ch-r-out: calc(var(--ch-r) + 1px);
+  /* an empty state, a burst, a chart card */
+  --ch-r-pane: calc(var(--ch-r) + 2px);
+  /* the raised text fields: search, dispatch */
+  --ch-r-field: calc(var(--ch-r) + 3px);
+  /* the end cap of a segmented control */
+  --ch-r-seg: calc(var(--ch-r) - 2px);
+  /* a small chip: range picker, section count, pin */
+  --ch-r-chip: calc(var(--ch-r) - 3px);
+  /* a tiny tag: outcome, kind, count, failure */
+  --ch-r-tag: calc(var(--ch-r) - 4px);
+  --ch-r-micro: 4px; /* a colour swatch */
+  --ch-r-hair: 2px; /* the hairline divider in the view switcher */
+
+  /* Off the ramp: these two are their own shapes, not steps in it. */
+  --ch-r-card: var(--r-card); /* the card, and the popovers that match it */
+  --ch-r-sheet: 18px; /* the top corners of a phone sheet */
+
+  /* ------------------------------------------------- chrome colour
+     Weight and shape were tokenised first and colour was left in the sheets -- where the
+     sheets had exactly one answer for "this is selected": fill it with --yellow. Five group
+     pills, eight rail tabs, the sidebar header, the filter chips, the filter rows and the
+     theme list all lit the same saturated fill, several of them at once, so the lit state
+     carried no information: the frame was simply yellow. These roles split that one answer
+     in three. A control that is SELECTED inverts to ink. A surface that merely STANDS there
+     -- a header, a chip, a burst -- takes a wash of the accent instead of the accent. The
+     accent itself is spent on the one primary action in a view, and on an unread count.
+
+     The palette in style.css is untouched: the two derived values are mixed from it with
+     color-mix (already used in style.css and views/room.css), so a theme that moves --ink,
+     --paper or --yellow moves the chrome's colour with it -- the same property the shadows
+     above already have. */
+  --ch-on: var(--ink); /* a selected control: filled, not lit */
+  --ch-on-ink: var(--cream); /* ...and its label, over that fill */
+  --ch-hover: color-mix(in srgb, var(--yellow) 14%, var(--paper)); /* under the pointer */
+  --ch-soft: color-mix(in srgb, var(--yellow) 32%, var(--paper)); /* a standing surface */
+  --ch-accent: var(--yellow); /* the one primary action, and an unread count */
+}
+
+/* ------------------------------------------------- the one "selected" look
+   Segmented controls, pill rows and tab rows across the app each had their own idea of
+   selected (ink, a paper lift, #ffc300, yellow, purple). A container that marks itself
+   .ch-seg gets this one instead, keyed off the state its buttons already announce:
+   aria-pressed for a toggle row, aria-selected for tabs, .on where the shell sets a class.
+   The class is doubled on purpose: it puts the rule one notch over a view's own
+   `.view-x .row button` base rule, so no view has to restate the selected state. */
+.ch-seg.ch-seg > :is([aria-pressed="true"], [aria-selected="true"], .on) {
+  background: var(--ch-on);
+  color: var(--ch-on-ink);
+}

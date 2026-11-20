@@ -1,0 +1,134 @@
+/* "alumni" feature: the 🎓 Hall panel (#panel). Scoped to .al-* (style.css is shared); reuses the
+   shared tokens (--ink, --paper, --s2, --r-btn, --fs-min, --body). */
+
+.al-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.al-sub,
+.al-meta,
+.al-none {
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.al-none {
+  font-style: italic;
+}
+
+.al-ranges {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.al-range-btn {
+  padding: 0.15rem 0.6rem;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.al-range-active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.al-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.al-h {
+  margin: 0.3rem 0 0;
+  font-size: 0.95rem;
+}
+
+.al-repo-h {
+  margin: 0.3rem 0 0;
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.al-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.al-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  padding: 0.4rem 0.5rem;
+  border: 2px solid var(--ink);
+  border-radius: 0.5rem;
+  background: var(--paper);
+}
+
+.al-card {
+  border-style: dashed;
+}
+
+.al-row-top {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.al-name,
+.al-name-btn {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.al-name-btn {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--ink);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+}
+
+.al-city {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.al-chip {
+  margin-left: auto;
+  padding: 0.05rem 0.5rem;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.al-reason {
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
+
+.al-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+}
+
+.al-links a {
+  color: var(--ink);
+}

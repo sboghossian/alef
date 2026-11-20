@@ -1,0 +1,493 @@
+/* 🚪 Room v2 — DOM chrome over the 3D room (views/room-3d.ts draws the room on the shared
+   canvas; .rm-stage is a transparent window onto it that takes the pointer). Bright comic kit. */
+
+.rm {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  pointer-events: auto;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--fs-body);
+}
+.rm button { font: inherit; color: inherit; }
+.rm [hidden] { display: none !important; }
+
+/* ---------- buttons shared by the dock (sidebar) and the overlays ---------- */
+.rm-dock button { font: inherit; color: inherit; }
+.rm-dock [hidden] { display: none !important; }
+.rm-step, .rm-allbtn, .rm-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--btn-h);
+  padding: 0 10px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: var(--fs-min);
+  font-weight: 700;
+  flex: none;
+}
+.rm-step:hover, .rm-allbtn:hover, .rm-pill:hover { background: var(--yellow-wash); }
+.rm-step { padding: 0; width: var(--btn-h); justify-content: center; }
+.rm-allbtn { background: var(--cyan-wash); }
+
+/* ---------- "This agent": the dock, hosted in a left-sidebar section (~230px wide) ---------- */
+.rm-dock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--fs-body);
+}
+.rm-who { min-width: 0; display: flex; align-items: center; gap: 6px; }
+.rm-who-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.rm-who-title { font-family: var(--display); font-size: var(--fs-md); line-height: 1.15; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.rm-who-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: var(--fs-min); color: var(--muted); }
+.rm-actions, .rm-lists { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.rm-actions .comic-btn { flex: 1 1 auto; }
+.rm-dock .comic-btn.small { min-height: 30px; padding-inline: 10px; }
+.rm-hard.rm-armed { background: var(--pink-wash); }
+.rm-screen-tabs { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+.rm-screen-tabs:not(:empty)::before { content: "Screen:"; font-size: var(--fs-min); font-weight: 800; }
+.rm-screen-btn { background: var(--ok-wash); }
+.rm-screen-btn.rm-live { background: var(--ok-wash); box-shadow: var(--ch-sh-sm); }
+.rm-tab[aria-selected="true"] { background: var(--ok-wash); box-shadow: var(--ch-sh-sm); }
+.rm-tab { max-width: 170px; overflow: hidden; text-overflow: ellipsis; min-height: 28px; }
+.rm-more { font-size: var(--fs-min); color: var(--muted); align-self: center; }
+.rm-note { display: flex; gap: 6px; min-width: 0; }
+.rm-note-input {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--btn-h);
+  padding: 0 10px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  font: inherit;
+  font-size: var(--fs-body);
+}
+.rm-note-input:disabled { background: var(--sky-wash); }
+.rm-status { flex-basis: 100%; font-size: var(--fs-min); font-weight: 700; }
+.rm-status:empty { display: none; }
+
+/* ---------- the 3D stage (transparent: the shared canvas draws the room) ---------- */
+.rm-stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+/* #/room/all has two sub-views: the 3D village diorama (default, the transparent .rm-stage) and
+   the flat 2D list it grew out of (.rm-grid-list, round 11's room-grid.ts, kept as a one-click
+   fallback with every tile action reachable at once). */
+.rm-mode-grid.rm-grid-list .rm-stage { display: none; }
+.rm-tip {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  max-width: 280px;
+  padding: 4px 10px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: var(--ch-sh-sm);
+  font-size: var(--fs-min);
+  font-weight: 700;
+  pointer-events: none;
+}
+/* The room's furniture-zone legend: informational only, so it never steals the stage's own
+   pointer events (hover/click for the 3D screen/board/shelf/window goes straight through it). */
+.rm-legend {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;
+  z-index: 2;
+  display: flex;
+  gap: 6px;
+  padding: 4px 8px;
+  transform: translateX(-50%);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  box-shadow: var(--ch-sh-sm);
+  pointer-events: none;
+}
+.rm-legend-item {
+  font-size: var(--fs-min);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.rm-mode-grid .rm-legend { display: none; }
+.rm-focus .rm-legend { display: none; }
+/* focus mode: the shell already hides all chrome; drop the grid's own noise too */
+.rm-focus .rm-grid-sub, .rm-focus .cr-max-btn { display: none; }
+.rm-fallback {
+  margin: 24px auto;
+  max-width: 420px;
+  padding: 12px 14px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+}
+
+/* ---------- village diorama overlays (#/room/all, diorama sub-mode) ---------- */
+.rm-mode-room .vlg-topbar, .rm-mode-room .vlg-dock, .rm-mode-room .vlg-feed,
+.rm-grid-list .vlg-topbar, .rm-grid-list .vlg-dock, .rm-grid-list .vlg-feed { display: none; }
+
+.vlg-topbar {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  max-width: calc(100% - 20px);
+  padding: 6px 10px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  box-shadow: var(--ch-sh-sm);
+}
+.vlg-topbar-count { min-width: 0; font-size: var(--fs-min); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vlg-topbar button { flex: none; }
+
+.vlg-dock {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(320px, calc(100% - 20px));
+  padding: 10px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  box-shadow: var(--ch-sh-md);
+}
+.vlg-dock-title { font-family: var(--display); font-size: var(--fs-md); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vlg-dock-note { margin: 0; font-size: var(--fs-min); color: var(--muted); }
+.vlg-dock .cr-actions { margin-top: 0; }
+
+.vlg-feed {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  bottom: 10px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(260px, calc(100% - 20px));
+  padding: 10px;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  box-shadow: var(--ch-sh-md);
+  overflow: hidden;
+}
+.vlg-feed-title { margin: 0; font-family: var(--display); font-size: var(--fs-md); }
+.vlg-feed-list { list-style: none; margin: 0; padding: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.vlg-feed-item { display: flex; flex-direction: column; gap: 1px; padding: 5px 7px; background: var(--cream); border: 2px solid var(--ink); border-radius: 8px; }
+.vlg-feed-message { border-color: var(--sky); }
+.vlg-feed-spawn { border-color: var(--pink); }
+.vlg-feed-handback { border-color: var(--ok); }
+.vlg-feed-text { font-size: var(--fs-min); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vlg-feed-at { font-size: var(--fs-xs); color: var(--muted); }
+.vlg-feed-empty { margin: 0; font-size: var(--fs-min); color: var(--muted); }
+/* Town square = global workspace (features/workspace-lib.ts): Top 5 | Log tabs, one row per slot. */
+.vlg-ws-tabs { display: flex; gap: 4px; flex: none; }
+.vlg-ws-tab {
+  flex: 1;
+  min-height: 26px;
+  padding: 0 8px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 800 var(--fs-min) var(--body);
+  cursor: pointer;
+}
+.vlg-ws-tab[aria-pressed="true"] { background: var(--yellow); }
+.vlg-ws-body { display: flex; flex-direction: column; gap: 6px; min-height: 0; }
+.vlg-ws-main {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1px 6px;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.vlg-ws-main:disabled { cursor: default; }
+.vlg-ws-emoji { grid-row: span 2; font-size: var(--fs-md); line-height: 1.3; }
+.vlg-ws-text {
+  font-size: var(--fs-min);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.vlg-ws-reason { font-size: var(--fs-xs); color: var(--muted); }
+.vlg-ws-waiting { border-color: var(--warn); }
+.vlg-ws-failure { border-color: var(--bad); }
+.vlg-ws-tripwire { border-color: var(--violet); }
+.vlg-ws-message { border-color: var(--sky); }
+.vlg-ws-count { margin: 0; font-size: var(--fs-xs); color: var(--muted); }
+body.alef-redact .vlg-ws-text { filter: blur(5px); }
+
+@media (max-width: 520px) {
+  /* Stay absolute (an overlay on top of the diorama), just reflow into a bottom sheet — static
+     would drop them into document flow and push the whole 3D view down out of sight. Room.ts
+     only ever shows .vlg-dock alongside .vlg-feed (never alone) in diorama mode, so the dock's
+     fixed offset just needs to clear the feed's height below it. */
+  .vlg-feed { left: 8px; right: 10px; top: auto; bottom: 8px; width: auto; max-height: 140px; }
+  .vlg-dock { left: 8px; right: 10px; width: auto; bottom: 156px; }
+}
+
+/* ---------- all agents: a grid of mini rooms (#/room/all) ---------- */
+.rm-grid { display: none; }
+/* Diorama sub-mode must stay transparent — the shared canvas shows the village through .rm-stage,
+   same as a single room. Only List sub-mode (plain DOM tiles, no 3D) needs the opaque page. */
+.rm-mode-grid.rm-grid-list { background: var(--cream); }
+.rm-mode-grid .rm-dock { display: none; }
+.rm-mode-grid.rm-grid-list .rm-grid { display: flex; flex-direction: column; flex: 1; min-height: 0; overflow: auto; padding: 12px 12px calc(var(--alef-prompt, 0px) + 12px); }
+.rm-grid-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; margin: 0 0 10px; }
+.rm-grid-head h2 { margin: 0; font-family: var(--display); font-size: var(--fs-lg); }
+.rm-grid-sub { font-size: var(--fs-min); color: var(--muted); }
+.rm-empty { margin: 8px 0; font-size: var(--fs-min); }
+
+/* tiles (round 11: merged in from the old Control room view — client/src/views/room-grid.ts) */
+.cr-max-btn { margin-left: auto; }
+.cr-max-btn.on { background: var(--yellow); }
+
+.cr-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cr-cols, 3), 1fr);
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  align-content: start;
+}
+.cr-grid.cr-grid-empty { display: flex; align-items: center; justify-content: center; }
+.cr-empty { margin: 0; padding: 20px; font-size: var(--fs-body); color: var(--muted); text-align: center; }
+
+.cr-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  min-height: 0;
+  padding: 10px;
+  text-align: left;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  box-shadow: var(--ch-sh-lg);
+  cursor: pointer;
+}
+.cr-tile:hover { transform: translate(-1px, -1px); box-shadow: var(--ch-sh-xl); }
+.cr-tile.cr-selected { outline: 3px solid var(--sky); outline-offset: 2px; }
+.cr-tile.cr-pinned { border-color: var(--pink); }
+.cr-tile.cr-waiting { box-shadow: 0 0 0 3px var(--amber), var(--ch-sh-lg); animation: cr-ring-pulse 1.6s ease-in-out infinite; }
+
+@keyframes cr-ring-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px var(--amber), var(--ch-sh-lg); }
+  50% { box-shadow: 0 0 0 6px var(--yellow-soft), var(--ch-sh-lg); }
+}
+
+.cr-tile-head { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.cr-art {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  padding: 3px;
+  background: color-mix(in srgb, var(--cr-accent, var(--sky)) 20%, var(--paper));
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+}
+.cr-art svg { width: 100%; height: 100%; display: block; }
+.cr-titles { flex: 1; min-width: 0; }
+.cr-title { font-weight: 800; font-size: var(--fs-body); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cr-sub { font-size: var(--fs-min); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cr-tile-head .as-chip { flex: none; margin-left: 0; }
+
+.cr-todo { display: flex; align-items: center; gap: 6px; }
+.cr-bar { flex: 1; height: 8px; background: var(--cream); border: 2px solid var(--ink); border-radius: 999px; overflow: hidden; }
+.cr-bar-fill { height: 100%; background: var(--ok); }
+.cr-todo-label { flex: none; font: 800 var(--fs-min) var(--body); color: var(--muted); min-width: 2.4em; text-align: right; }
+
+.cr-screen {
+  flex: 1;
+  min-height: 60px;
+  max-height: 130px;
+  padding: 6px 8px;
+  background: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  overflow: hidden auto;
+  font: var(--fs-xs)/1.5 "SF Mono", Menlo, monospace;
+}
+.cr-line { display: flex; align-items: baseline; gap: 6px; }
+.cr-line .stage-dot { width: 6px; height: 6px; border-radius: 2px; border-width: 1px; }
+.cr-line-text { color: var(--sky-wash); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cr-screen-empty { margin: 0; color: var(--line-cool); font-style: italic; }
+
+.cr-usage { display: flex; gap: 8px; font: 800 var(--fs-min) var(--body); color: var(--muted); }
+.cr-usage-cost { color: var(--ink); }
+
+.cr-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+.cr-actions .comic-btn { flex: 1 1 auto; min-width: 0; padding-left: 8px; padding-right: 8px; }
+
+.cr-talk { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.cr-talk-input {
+  flex: 1 1 120px;
+  min-width: 0;
+  height: var(--btn-h);
+  padding: 0 8px;
+  font: var(--fs-body) var(--body);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+}
+.cr-talk-status { font-size: var(--fs-min); color: var(--muted); }
+
+/* pin list (sidebar section): mirrors the shell's own "list" filter look */
+.cr-pin-list { max-height: 260px; overflow-y: auto; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cr-tile, .cr-tile.cr-waiting { animation: none !important; }
+}
+
+/* ---------- overlays: screen, preview, todos, shelf ---------- */
+.rm-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 12px calc(var(--alef-prompt, 0px) + 12px);
+  background: rgba(255, 248, 231, 0.72);
+}
+.rm-ov-card {
+  display: flex;
+  flex-direction: column;
+  width: min(980px, 100%);
+  height: min(660px, 100%);
+  background: var(--cream);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  box-shadow: var(--ch-sh-xl);
+  overflow: hidden;
+}
+.rm-ov-small { width: min(560px, 100%); height: auto; max-height: 100%; }
+.rm-ov-head { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-bottom: 3px solid var(--ink); background: var(--yellow); }
+.rm-ov-titles { flex: 1; min-width: 0; }
+.rm-ov-title { font-family: var(--display); font-size: var(--fs-md); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rm-ov-sub { font-size: var(--fs-min); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rm-ov-tools { display: flex; gap: 6px; }
+.rm-ov-body { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: auto; }
+.rm-ov-pad { padding: 10px 14px 14px; }
+.rm-ov-screen .rm-ov-body > .aw-term { flex: 1; min-height: 0; }
+.rm-preview { flex: 1; width: 100%; border: 0; background: var(--paper); }
+.rm-ro-why { margin: 12px; padding: 10px 12px; background: var(--paper); border: 2px solid var(--ink); border-radius: 10px; }
+.rm-ro-lines { list-style: none; margin: 0 12px 12px; padding: 10px; background: var(--ok-wash); border: 2px solid var(--ink); border-radius: 10px; font-family: "SF Mono", Menlo, monospace; font-size: var(--fs-min); }
+.rm-line { display: flex; gap: 8px; }
+.rm-line::before { content: "›"; font-weight: 800; }
+.rm-line-dim { color: var(--muted); }
+.rm-stage-tool::before { color: var(--amber-text); }
+.rm-stage-plan::before { color: #1a7fc4; }
+.rm-stage-reason::before { color: var(--sky); }
+.rm-stage-brain::before { color: #d63d8f; }
+.rm-stage-hook::before { color: var(--warn); }
+.rm-ro-at { color: var(--muted); flex: none; }
+
+/* shelf list (overlay) */
+.rm-planks { display: flex; flex-direction: column; gap: 6px; }
+.rm-plank { display: flex; flex-direction: column; gap: 3px; }
+.rm-plank-title { font-size: var(--fs-min); font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: var(--amber-text); }
+.rm-plank-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 5px;
+  min-height: 30px;
+  padding: 0 4px 5px;
+  border-bottom: 7px solid #c98a4b;
+  box-shadow: 0 3px 0 var(--ink);
+}
+.rm-plank-empty { font-size: var(--fs-min); color: var(--muted); padding-bottom: 2px; }
+.rm-shelf-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 220px;
+  min-height: 30px;
+  padding: 2px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 6px 6px 3px 3px;
+  background: var(--paper);
+  font-size: var(--fs-min);
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--ink);
+}
+.rm-shelf-item:hover { transform: translateY(-2px); background: var(--yellow-wash); }
+.rm-shelf-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rm-jar { background: var(--cyan-wash); border-radius: 10px 10px 6px 6px; }
+.rm-frame { background: var(--pink-wash); border-width: 3px; }
+.rm-book { background: var(--yellow-wash); border-radius: 3px; }
+.rm-card { background: var(--ok-wash); }
+.rm-gone { opacity: 0.55; cursor: default; text-decoration: line-through; }
+.rm-shelf-note { margin: 4px 2px; font-size: var(--fs-min); color: var(--muted); }
+
+/* ---------- focus mode: the room only ---------- */
+
+
+/* planet overlays would float over the room / the grid: hide them while the Room is up */
+body.alef-room-open #labels,
+body.alef-room-open #fx-layer,
+body.alef-room-open #overlays,
+body.alef-room-open #zaps,
+body.alef-room-open #bubble,
+body.alef-room-open #exploring,
+body.alef-room-open #captions,
+body.alef-room-open #city-card,
+body.alef-room-open #room-hud,
+body.alef-room-open .sky-body { display: none !important; }
+/* …and the contextual details panel, unless someone explicitly opened one (a palette command, a
+   Settings button, Jev's answer: ui/panel.ts sets alef-panel-forced), which would be invisible. */
+body.alef-room-open:not(.alef-panel-forced) #panel { display: none !important; }
+
+@keyframes rm-bob { 50% { transform: translateY(-5px) rotate(-3deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .rm *, .rm *::before { animation: none !important; }
+}
+
+/* ---------- phone ---------- */
+@media (max-width: 520px) {
+  .rm-meta-txt { display: none; }
+  .rm-step, .rm-allbtn, .rm-pill { min-height: 40px; }
+  .rm-dock .comic-btn, .rm-note-input { min-height: var(--touch); }
+  .cr-grid { grid-template-columns: repeat(1, 1fr) !important; }
+  .cr-actions .comic-btn { min-height: var(--touch); }
+  .rm-ov-card { height: 100%; }
+}

@@ -1,0 +1,119 @@
+/* Loops tab (right sidebar, #alef-pane-loops). Scoped to .lp-* (style.css is shared). */
+
+.lp-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--cream);
+  padding-bottom: var(--s2);
+  margin-bottom: var(--s2);
+}
+
+.lp-filter {
+  width: 100%;
+  height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  color: var(--ink);
+  font: 600 var(--fs-body) var(--body);
+}
+.lp-filter::placeholder {
+  color: var(--placeholder);
+}
+
+.lp-lens {
+  margin-bottom: var(--s4);
+}
+.lp-lens[hidden] {
+  display: none;
+}
+
+.lp-items {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--s2);
+}
+
+.lp-item {
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--paper);
+  box-shadow: var(--ch-sh-md);
+  padding: var(--s2) var(--s3);
+}
+
+.lp-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--s2);
+}
+
+.lp-project {
+  font: 800 var(--fs-min) var(--body);
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--sky);
+}
+
+.lp-task {
+  flex: 1 1 100%;
+  font: 600 var(--fs-body) var(--body);
+  color: var(--ink);
+  word-break: break-word;
+}
+
+.lp-age,
+.lp-src {
+  font: 600 var(--fs-min) var(--body);
+  color: var(--muted);
+}
+
+.lp-actions {
+  display: flex;
+  gap: var(--s2);
+  margin-top: var(--s2);
+}
+
+.lp-btn {
+  min-height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  color: var(--ink);
+  font: 700 var(--fs-min) var(--body);
+  cursor: pointer;
+}
+.lp-btn:hover,
+.lp-btn:focus-visible {
+  background: var(--cream);
+  box-shadow: var(--ch-sh-sm);
+}
+
+.lp-btn-launch {
+  background: var(--yellow);
+}
+.lp-btn-launch.lp-confirm {
+  background: var(--pink);
+  color: var(--paper);
+}
+
+.lp-empty {
+  padding: var(--s3);
+  font: 600 var(--fs-body) var(--body);
+  color: var(--muted);
+}
+
+.lp-whatsup-warn {
+  margin: 0 0 var(--s3);
+  padding: var(--s2) var(--s3);
+  border: 2px dashed var(--ink);
+  border-radius: var(--r-btn);
+  font: 600 var(--fs-min) var(--body);
+  color: var(--muted);
+}

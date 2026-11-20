@@ -1,0 +1,641 @@
+/* 🏠 Home view. Scoped under .view-home / .home-*. Non-planet: the shell's opaque cream page (the
+   3D loop is paused). Bright comic kit only: cream cards, 3px ink borders, hard offset shadows. */
+
+.view-home.home-view {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* The two-column layout below keys off the main area's width, not the window's. */
+  container-type: inline-size;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: var(--fs-body);
+}
+
+.home-view * {
+  box-sizing: border-box;
+}
+
+/* ── hero: "Hi Steph" and the one prompt box, centred; Needs you now right under it ─────────
+   Compact (VIS-9): no min-height, so the page opens on what needs you, not on a screen of sky. */
+
+.home-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  /* Wide enough side padding that the sidebars' fold handles never sit on the prompt box. */
+  padding: 20px 36px 24px;
+}
+
+.home-hi {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(34px, 4.6vw, 54px);
+  line-height: 1.05;
+  letter-spacing: 0.5px;
+  color: var(--ink);
+  text-align: center;
+}
+
+.home-prompt {
+  width: min(780px, 100%);
+  container-type: inline-size;
+}
+
+/* The same #dispatch the other views dock above the status bar (style.css + shell.css), laid out
+   as a roomy card here: text on top, the options row under it. */
+.view-home .home-prompt #dispatch {
+  position: relative;
+  left: auto;
+  bottom: auto;
+  translate: none;
+  z-index: auto;
+  width: 100%;
+  padding: 14px 16px 12px;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-xl);
+}
+
+.view-home .home-prompt #dispatch-text {
+  min-height: 64px;
+  font-size: var(--fs-lg);
+  padding-right: 4px;
+}
+
+.view-home .home-prompt .dispatch-row {
+  flex-wrap: wrap;
+  margin-top: 10px;
+  row-gap: 8px;
+}
+
+.view-home .home-prompt #dispatch-city {
+  max-width: 220px;
+}
+
+.view-home .home-prompt .dispatch-hint {
+  white-space: nowrap;
+}
+
+/* A narrow box (both sidebars open on a laptop): the "↵ to dispatch" hint goes before Dispatch wraps. */
+@container (max-width: 660px) {
+  .view-home .home-prompt .dispatch-hint {
+    display: none;
+  }
+  .view-home .home-prompt .dispatch-row {
+    justify-content: space-between;
+  }
+}
+
+/* ── the feed under it ──────────────────────────────────────────────────────────────────── */
+
+/* One column: Needs you now, Pick up where you left off, What happened, Automations, Live feed, Jev. The two .home-col
+   wrappers only exist for the wide layout, so here they step aside and `order` sets the run. */
+.home-feed {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 36px 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.home-col {
+  display: contents;
+}
+
+.home-needs {
+  order: 1;
+}
+.home-pickup {
+  order: 2;
+}
+.home-digest {
+  order: 3;
+}
+.home-auto {
+  order: 4;
+}
+.home-live {
+  order: 5;
+}
+.home-jev {
+  order: 6;
+}
+
+/* A wide main area (Steph's 2648px screen): two columns, so What happened sits beside Needs you
+   now above the fold instead of ~900px of cream under them. */
+@container (min-width: 1800px) {
+  .home-feed {
+    max-width: 1760px;
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .home-col {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+}
+
+.home-card {
+  min-width: 0;
+  padding: 14px 16px 16px;
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--paper);
+  box-shadow: var(--ch-sh-lg);
+  scroll-margin-top: 12px;
+}
+
+.home-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--s2);
+  margin-bottom: var(--s2);
+}
+
+.home-card-head h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: 900 var(--fs-lg) var(--display);
+}
+
+.home-tabs {
+  display: flex;
+  gap: 6px;
+}
+
+.home-tab {
+  min-height: var(--btn-h);
+  padding: 0 var(--s3);
+  border: 2.5px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  font: 800 var(--fs-sm) var(--body);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+/* Selected is the chrome's one look (.ch-seg in shell/chrome.css): ink, not yellow. */
+.home-tab[aria-pressed="true"] {
+  box-shadow: var(--ch-sh-sm);
+}
+
+.home-meta,
+.home-quiet {
+  margin: 4px 0;
+  font-size: var(--fs-min);
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.home-card-note:empty {
+  display: none;
+}
+
+.home-link {
+  flex: none;
+  padding: 2px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--yellow-wash);
+  font: 800 var(--fs-min) var(--body);
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.home-link:hover {
+  background: var(--yellow);
+}
+
+/* What happened */
+.home-summary {
+  margin: 6px 0 12px;
+  padding: 10px 12px;
+  border: 2.5px dashed var(--ink);
+  border-radius: 12px;
+  background: var(--cream);
+}
+
+.home-summary-text {
+  margin: 0 0 6px;
+  font-size: var(--fs-md);
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.home-note {
+  margin: 6px 0;
+  font-weight: 700;
+  color: var(--amber-text);
+}
+
+.home-summary-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.home-regen-status:empty {
+  display: none;
+}
+
+.home-facts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.home-fact {
+  padding: 8px 10px;
+  border: 2px solid var(--ink);
+  border-left-width: 6px;
+  border-radius: 10px;
+  background: var(--paper);
+}
+
+.home-fact-main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.home-fact-text {
+  min-width: 0;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.home-fact-sub {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: var(--fs-min);
+  font-weight: 600;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.home-tone-good {
+  border-left-color: var(--ok-text);
+}
+
+.home-tone-bad {
+  border-left-color: var(--pink);
+}
+
+.home-tone-quiet .home-fact-text {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+/* rows: automations, Jev */
+.home-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.home-row {
+  width: 100%;
+  display: grid;
+  gap: 3px;
+  padding: 8px 10px;
+  border: 2.5px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: var(--ch-sh-sm);
+  text-align: left;
+  font: 600 var(--fs-body) var(--body);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.home-row:hover {
+  background: var(--yellow-wash);
+}
+
+.home-row-bad {
+  border-color: var(--pink-text);
+}
+
+.home-row-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.home-row-name {
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.home-row-when {
+  margin-left: auto;
+  font: 800 var(--fs-min) var(--body);
+  color: var(--muted);
+}
+
+.home-row-line {
+  font-size: var(--fs-min);
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.home-row-next,
+.home-row-why {
+  color: var(--muted);
+}
+
+.home-chip {
+  padding: 1px 7px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--cream);
+  font: 800 var(--fs-xs) var(--body);
+  white-space: nowrap;
+}
+
+.home-chip-trusted,
+.home-status-good {
+  background: var(--ok-wash);
+}
+
+.home-chip-probation,
+.home-status-wait {
+  background: var(--yellow-wash);
+}
+
+.home-chip-lapsed,
+.home-chip-retired,
+.home-status-quiet {
+  background: var(--sky-wash);
+}
+
+.home-status-bad {
+  background: var(--pink-wash);
+}
+
+.home-more {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.home-more:empty {
+  display: none;
+}
+
+/* Needs you now: the page's first card. Something waiting: the count is a big pink bubble and the
+   card casts the hot shadow; nothing: one calm line and what is running. */
+.home-needs h2:focus {
+  outline: none;
+}
+.home-needs h2:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+.home-needs .home-count:not(:empty) {
+  min-width: 30px;
+  padding: 2px 9px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--pink);
+  color: var(--ink);
+  font-size: var(--fs-md);
+  vertical-align: 3px;
+}
+.home-needs.home-needs-hot {
+  box-shadow: var(--ch-sh-lg-hot);
+}
+.home-calm[hidden] {
+  display: none;
+}
+.home-calm-head {
+  margin: 0 0 2px;
+  font-family: var(--display);
+  font-size: var(--fs-xl);
+}
+.home-calm .home-meta {
+  margin: 0;
+}
+/* The Inbox's own "Inbox zero" line: Home's calm state above says it instead. */
+.home-inbox .i-empty {
+  display: none;
+}
+
+/* the Inbox pane itself, not scrolling on its own */
+.home-inbox.alef-pane {
+  flex: none;
+  overflow: visible;
+  padding: 0;
+}
+
+.home-inbox .alef-pane-h:first-child {
+  margin-top: 0;
+}
+
+/* Live feed */
+.home-cards {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.home-feed-card {
+  padding: 8px 10px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+}
+
+.home-feed-card.home-pinned {
+  background: var(--yellow-wash);
+  box-shadow: var(--ch-sh-sm);
+}
+
+.home-feed-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 800 var(--fs-min) var(--body);
+  color: var(--muted);
+}
+
+.home-feed-at {
+  margin-left: auto;
+}
+
+.home-feed-title {
+  margin: 4px 0 0;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.home-feed-detail {
+  margin: 2px 0 0;
+  font-size: var(--fs-min);
+  font-weight: 600;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.home-feed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.home-feed-more[hidden] {
+  display: none;
+}
+
+/* left sidebar: "On this page" */
+.home-jump {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.home-jump-btn {
+  width: 100%;
+  min-height: var(--btn-h);
+  padding: 4px 10px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn);
+  background: var(--paper);
+  text-align: left;
+  font: 800 var(--fs-sm) var(--body);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.home-jump-btn:hover {
+  background: var(--yellow-wash);
+}
+
+/* phones: less air, 44px targets */
+body.alef-phone .home-hero {
+  padding: 16px var(--s4) 16px;
+  gap: 12px;
+}
+
+body.alef-phone .home-feed {
+  padding: 0 var(--s4) 40px;
+}
+
+body.alef-phone .home-tab,
+body.alef-phone .home-jump-btn {
+  min-height: var(--touch);
+}
+
+body.alef-phone .home-card {
+  padding: 12px;
+}
+
+/* ?redact=1 (client/src/redact.ts): Home's free text the store doesn't own is blurred for public
+   screenshots, as the Feed tab (style.css) and the Inbox's proposals (president.css) are: the
+   Live feed's lines, the Jev and automation lines (proposal words, rankings, a run's reason), the
+   fact sub-lines (PR titles, district and repo names) and the Haiku summary. Counts stay readable.
+   home.test.ts mounts Home with private fixture text and fails on any of it left unblurred. */
+body.alef-redact .home-feed-title,
+body.alef-redact .home-feed-detail,
+body.alef-redact .home-row-line,
+body.alef-redact .home-row-why,
+body.alef-redact .home-fact-sub,
+body.alef-redact .home-summary-text {
+  filter: blur(5px);
+}
+
+/* ── the garden: a pixel band behind the greeting (features/garden.ts) ─────────────────────── */
+
+/* The greeting band: garden + "Hi Steph", capped at ~280px whatever the window (VIS-9). */
+.home-greeting {
+  position: relative;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 166px;
+  max-height: 280px;
+}
+
+.home-garden-slot {
+  /* Edge to edge behind the greeting; its soil sits in the gap above the prompt box. */
+  position: absolute;
+  left: -36px;
+  right: -36px;
+  bottom: -22px;
+  pointer-events: none;
+}
+
+.home-garden {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  overflow: hidden;
+  height: 200px;
+  /* Soft sky behind the plants: clear at the top so it fades in from the page, pale sky toward the ground. */
+  background: linear-gradient(to bottom, rgba(255, 248, 231, 0) 0%, var(--cyan-wash) 50%, var(--cyan-wash) 100%);
+}
+
+.home-garden-canvas {
+  display: block;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: auto;
+}
+
+.home-hero .home-hi,
+.home-hero .home-prompt {
+  position: relative;
+  z-index: 1;
+}
+
+.home-hero .home-hi {
+  /* A soft cream plate keeps the greeting readable over the stems behind it. */
+  padding: 2px 22px 6px;
+  border-radius: 18px;
+  background: rgba(255, 248, 231, 0.78);
+  text-shadow: 0 0 8px var(--cream);
+  pointer-events: none;
+}
+
+.home-garden-note {
+  position: absolute;
+  left: 50%;
+  bottom: 46px;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--ink);
+  font-size: var(--fs-body);
+  white-space: nowrap;
+}

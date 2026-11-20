@@ -1,0 +1,110 @@
+/* Round 11 C: the Explain layer (labels + "What is this?" card), the Orbit sidebar's Explain
+   section and the guided tour's caption card. Scoped to .xp-* / .sq-*; comic-kit tokens from
+   client/src/style.css (ink outlines, cream cards, chunky shadows). */
+
+/* ---- labels on the planet (in #fx-layer, pointer-events none) ---- */
+.xp-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  max-width: 220px;
+  padding: 3px 8px 4px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--ch-sh-sm);
+  font: 700 var(--fs-xs)/1.15 var(--body);
+  text-align: center;
+  translate: -50% -125%;
+  white-space: nowrap;
+}
+.xp-label .xp-kind { font: 900 var(--fs-xs)/1.15 var(--body); }
+.xp-label .xp-name { font-weight: 600; color: var(--muted); overflow: hidden; text-overflow: ellipsis; max-width: 200px; }
+.xp-label[data-tone="district"] { background: var(--yellow-wash); }
+.xp-label[data-tone="continent"] { background: var(--pink-wash); font-size: var(--fs-sm); }
+.xp-label[data-tone="harness"] { background: var(--yellow); }
+.xp-label[data-tone="house"] { background: var(--pink-wash); }
+.xp-label[data-tone="car"], .xp-label[data-tone="station"] { background: var(--cyan-wash); }
+.xp-label[data-tone="drone"] { background: var(--yellow-wash); }
+.xp-label[data-tone="gate"] { background: var(--pink-wash); }
+.xp-label[data-tone="plant"] { background: var(--ok-wash); }
+.xp-label[data-tone="place"] { background: var(--sky-wash); }
+.xp-label[data-tone="routines"] { background: var(--ok-wash); }
+.xp-label[data-tone="moon"] { background: var(--yellow-wash); }
+
+/* ---- the "What is this?" card (inside the details panel) ---- */
+.xp-card .xp-title { margin: 0 0 4px; font: 900 var(--fs-md)/1.2 var(--display); }
+.xp-card .xp-what { margin: 0 0 10px; font: 600 var(--fs-body)/1.4 var(--body); }
+.xp-card .xp-sec { font: 900 var(--fs-xs) var(--body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 10px 0 4px; }
+.xp-card .xp-today { margin: 0; padding-left: 18px; font: 600 var(--fs-body)/1.4 var(--body); }
+.xp-card .xp-none { margin: 0; font: 600 var(--fs-body) var(--body); color: var(--muted); }
+.xp-card .xp-kv {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  padding: 8px 10px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--cream);
+  font: 600 var(--fs-body) var(--body);
+}
+.xp-card .xp-kv b { font-weight: 900; }
+.xp-card .xp-kv span { overflow-wrap: anywhere; }
+.xp-card .xp-src { margin: 8px 0 0; font: 600 var(--fs-xs) var(--body); color: var(--muted); }
+.xp-card .xp-more { margin-top: 10px; }
+
+/* ---- power plant card: "How the model was built" strip ---- */
+.xp-card .xp-build { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; counter-reset: build-stage; }
+.xp-card .xp-build li {
+  padding: 6px 10px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--cream);
+  counter-increment: build-stage;
+}
+.xp-card .xp-build b {
+  display: block;
+  font: 900 var(--fs-xs) var(--body);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.xp-card .xp-build b::before { content: counter(build-stage) ". "; }
+.xp-card .xp-build span { display: block; font: 600 var(--fs-body)/1.4 var(--body); }
+
+/* ---- Orbit sidebar: Explain section ---- */
+.xp-switch { margin-bottom: 8px; }
+.xp-tour { width: 100%; justify-content: center; }
+.xp-hint { margin: 8px 0 0; font: 600 var(--fs-sm)/1.35 var(--body); color: var(--muted); }
+
+/* ---- System Quarter name chips (explain off, camera close) ---- */
+.orbit-chip.sq-chip { background: var(--sky-wash); }
+
+/* ---- the tour's caption card ---- */
+.xp-tour-card {
+  position: fixed;
+  z-index: 40;
+  left: 50%;
+  bottom: calc(var(--alef-bottom, 34px) + var(--alef-prompt, 0px) + 18px);
+  translate: -50% 0;
+  width: min(520px, calc(100vw - 32px));
+  padding: 14px 16px 12px;
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: var(--ch-sh-xl);
+}
+.xp-tour-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.xp-tour-count { font: 900 var(--fs-xs) var(--body); letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.xp-tour-title { margin: 0; font: 900 var(--fs-lg)/1.2 var(--display); }
+.xp-tour-bar { height: 6px; margin: 8px 0 10px; border: 2px solid var(--ink); border-radius: 999px; background: var(--cream); overflow: hidden; }
+.xp-tour-bar i { display: block; height: 100%; background: var(--pink); }
+.xp-tour-cap { margin: 0 0 12px; font: 600 var(--fs-md)/1.45 var(--body); }
+.xp-tour-btns { display: flex; gap: 8px; justify-content: flex-end; flex-wrap: wrap; }
+.xp-tour-btns .xp-skip { margin-right: auto; }
+.xp-tour-btns button:disabled { opacity: 0.45; cursor: default; }
+body.aw-zen .xp-tour-card { display: none; }

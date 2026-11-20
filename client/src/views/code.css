@@ -1,0 +1,816 @@
+/* 💻 Code view: VS Code layout in the bright comic kit (cream boxes, 3px ink, hard shadows).
+   Editor and diff colours are light: paper background, ink text, pastel add/del rows. */
+.cdv-root {
+  --cdv-gap: 10px;
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "ed"
+    "panel";
+  gap: var(--cdv-gap);
+  padding: var(--cdv-gap);
+  background: var(--cream);
+  color: var(--ink);
+  font: var(--fs-body)/1.4 var(--body);
+}
+.cdv-box {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card, 14px);
+  box-shadow: var(--ch-sh-lg);
+  overflow: clip;
+}
+.cdv-box-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 4px 10px;
+  border-bottom: 3px solid var(--ink);
+  background: var(--yellow);
+  flex: none;
+}
+.cdv-box-title {
+  min-width: 40px;
+  flex: 0 1 auto;
+  font: 800 var(--fs-body)/1.2 var(--display);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cdv-branch {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 0 1 auto;
+  font: 700 var(--fs-sm)/1 var(--body);
+  padding: 3px 7px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  white-space: nowrap;
+}
+.cdv-head-btns {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+}
+.cdv-mini,
+.cdv-btn,
+.cdv-seg button,
+.cdv-panel-tabs button,
+.cdv-phone-tab {
+  min-height: var(--btn-h, 32px);
+  padding: 0 10px;
+  border: 2px solid var(--ink);
+  border-radius: var(--r-btn, 9px);
+  background: var(--paper);
+  color: var(--ink);
+  font: 800 var(--fs-sm)/1 var(--body);
+  cursor: pointer;
+}
+.cdv-mini:hover,
+.cdv-btn:hover,
+.cdv-seg button:hover,
+.cdv-panel-tabs button:hover {
+  background: var(--yellow-wash);
+}
+:is(.cdv-mini, .cdv-btn, .cdv-seg button, .cdv-panel-tabs button, .cdv-phone-tab, .cdv-link, .cdv-row):focus-visible {
+  outline-offset: 1px;
+}
+.cdv-scroll {
+  overflow: auto;
+  min-height: 0;
+}
+.cdv-empty {
+  margin: 12px;
+  color: var(--muted);
+  font-weight: 600;
+}
+.cdv-err {
+  color: var(--ink);
+}
+.cdv-note {
+  margin: 8px 12px;
+  font-weight: 700;
+  color: var(--amber-text);
+}
+.cdv-meta {
+  color: var(--muted);
+  font-size: var(--fs-sm);
+}
+
+/* ---- explorer ---- */
+.cdv-explorer {
+  grid-area: ex;
+  width: 240px;
+}
+.cdv-tree {
+  flex: 1;
+  overflow: auto;
+  padding: 6px 0 10px;
+  font-size: var(--fs-body);
+}
+.cdv-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 26px;
+  padding: 0 8px 0 calc(8px + var(--depth, 0) * 14px);
+  cursor: pointer;
+  white-space: nowrap;
+  border-left: 4px solid transparent;
+}
+.cdv-row:hover {
+  background: var(--yellow-wash);
+}
+.cdv-row.cdv-active {
+  background: var(--yellow-soft);
+  border-left-color: var(--pink);
+}
+.cdv-row.cdv-flash {
+  animation: cdv-flash 1.2s ease-out;
+}
+@keyframes cdv-flash {
+  0% {
+    background: var(--yellow);
+  }
+}
+.cdv-row.cdv-touched .cdv-name {
+  font-weight: 800;
+}
+.cdv-row.cdv-blocked {
+  opacity: 0.6;
+}
+.cdv-dir .cdv-name {
+  font-weight: 700;
+}
+.cdv-ico {
+  width: 16px;
+  text-align: center;
+  flex: none;
+  font-size: var(--fs-sm);
+}
+.cdv-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.cdv-row .cdv-badge,
+.cdv-row .cdv-git,
+.cdv-row .cdv-dirdot,
+.cdv-row .cdv-lock {
+  margin-left: auto;
+}
+.cdv-row .cdv-badge + .cdv-git {
+  margin-left: 4px;
+}
+.cdv-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  font: 800 var(--fs-sm)/1.1 var(--body);
+  white-space: nowrap;
+}
+.cdv-touch {
+  background: var(--pink-wash);
+}
+.cdv-dirdot {
+  min-width: 20px;
+  padding: 0 5px;
+  text-align: center;
+  border-radius: 999px;
+  background: var(--pink-wash);
+  font: 800 var(--fs-sm)/18px var(--body);
+}
+.cdv-git {
+  display: inline-block;
+  min-width: 18px;
+  text-align: center;
+  font: 900 var(--fs-sm)/18px var(--body);
+  border-radius: 5px;
+  border: 2px solid var(--ink);
+  background: var(--yellow-wash);
+}
+.cdv-git-A,
+.cdv-git-U {
+  background: var(--ok-wash);
+}
+.cdv-git-D {
+  background: var(--pink-wash);
+}
+.cdv-git-R {
+  background: var(--sky-wash);
+}
+.cdv-tree-foot {
+  margin: 10px 12px 4px;
+  font-size: var(--fs-sm);
+  color: var(--muted);
+}
+.cdv-outside {
+  margin: 4px 10px;
+  font-size: var(--fs-sm);
+}
+.cdv-outside summary {
+  cursor: pointer;
+  font-weight: 800;
+  min-height: 28px;
+  line-height: 28px;
+}
+.cdv-outside ul {
+  margin: 0;
+  padding: 0 0 0 4px;
+  list-style: none;
+}
+.cdv-outside li {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 2px 0;
+}
+
+/* ---- editor ---- */
+.cdv-editor {
+  grid-area: ed;
+}
+.cdv-tabs {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  flex: none;
+  background: var(--line);
+  border-bottom: 3px solid var(--ink);
+  min-height: 38px;
+  scrollbar-width: thin;
+}
+.cdv-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px 0 10px;
+  border-right: 2px solid var(--ink);
+  white-space: nowrap;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 36px;
+}
+.cdv-tab.cdv-on {
+  background: var(--paper);
+  box-shadow: inset 0 -4px 0 var(--pink);
+}
+.cdv-tab-diff {
+  font: 800 var(--fs-sm)/1 var(--body);
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: var(--sky-wash);
+}
+.cdv-tab-dot {
+  color: var(--pink-text);
+  font-size: var(--fs-sm);
+}
+.cdv-tab-x {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: transparent;
+  border-radius: 6px;
+  font: 800 var(--fs-md)/1 var(--body);
+  cursor: pointer;
+  color: var(--ink);
+}
+.cdv-tab-x:hover {
+  background: var(--pink-wash);
+}
+.cdv-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px;
+  border-bottom: 2px solid var(--line);
+  flex: none;
+  min-height: 42px;
+  flex-wrap: wrap;
+}
+.cdv-toolbar:empty {
+  display: none;
+}
+.cdv-crumbs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  font-weight: 700;
+  flex: 1 1 200px;
+}
+.cdv-crumbs span:last-child {
+  font-weight: 900;
+}
+.cdv-sep {
+  color: var(--muted);
+}
+.cdv-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cdv-seg {
+  display: inline-flex;
+}
+.cdv-seg button {
+  border-radius: 0;
+  margin-left: -2px;
+}
+.cdv-seg button:first-child {
+  border-radius: var(--r-btn, 9px) 0 0 var(--r-btn, 9px);
+  margin-left: 0;
+}
+.cdv-seg button:last-child {
+  border-radius: 0 var(--r-btn, 9px) var(--r-btn, 9px) 0;
+}
+/* Selected: the shared .ch-seg rule (shell/chrome.css). The diff counts drop their green and
+   red on the ink fill, where neither reads. */
+.cdv-seg [aria-pressed="true"] :is(.cdv-plus, .cdv-minus) {
+  color: inherit;
+}
+.cdv-plus {
+  color: var(--ok-text);
+}
+.cdv-minus {
+  color: var(--pink-text);
+}
+.cdv-body {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  background: var(--paper);
+  outline: none;
+}
+.cdv-code,
+.cdv-diff {
+  font: var(--fs-body)/1.5 "SF Mono", Menlo, Monaco, "Cascadia Mono", Consolas, monospace;
+  min-width: max-content;
+  padding: 6px 0 24px;
+  tab-size: 2;
+}
+.cdv-ln,
+.cdv-dl {
+  display: flex;
+  white-space: pre;
+}
+.cdv-ln:hover {
+  background: var(--yellow-wash);
+}
+.cdv-no {
+  flex: none;
+  width: var(--gw, 5ch);
+  min-width: 4ch;
+  padding: 0 10px 0 8px;
+  text-align: right;
+  color: var(--muted); /* line numbers are text too: #a79dbb measured 2.4:1 */
+  user-select: none;
+  position: sticky;
+  left: 0;
+  background: inherit;
+}
+.cdv-ln .cdv-no {
+  background: var(--paper);
+  border-right: 2px solid var(--line);
+}
+.cdv-tx {
+  padding: 0 16px 0 10px;
+}
+.cdv-sign {
+  flex: none;
+  width: 2ch;
+  text-align: center;
+  user-select: none;
+  font-weight: 900;
+}
+.cdv-dl .cdv-no {
+  width: 5ch;
+  padding: 0 6px;
+}
+.cdv-dadd {
+  background: var(--ok-wash);
+}
+.cdv-dadd .cdv-sign {
+  color: var(--ok-text);
+}
+.cdv-ddel {
+  background: var(--pink-wash);
+}
+.cdv-ddel .cdv-sign {
+  color: var(--pink-text);
+}
+.cdv-dhunk {
+  background: var(--sky-wash);
+  color: var(--sky);
+  font-weight: 700;
+  margin: 6px 0 2px;
+}
+.cdv-dmeta {
+  color: var(--muted);
+}
+.cdv-dnone {
+  background: repeating-linear-gradient(135deg, var(--cream) 0 6px, var(--line) 6px 12px);
+}
+.cdv-split .cdv-pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.cdv-split .cdv-pair > .cdv-dl {
+  overflow: hidden;
+}
+.cdv-split .cdv-pair > .cdv-dl + .cdv-dl {
+  border-left: 2px solid var(--line);
+}
+.cdv-split {
+  min-width: 0;
+}
+.cdv-refused {
+  margin: 24px;
+  padding: 16px 18px;
+  border: 3px dashed var(--ink);
+  border-radius: var(--r-card, 14px);
+  background: var(--pink-wash);
+  font-weight: 800;
+  max-width: 60ch;
+}
+.cdv-welcome {
+  padding: 20px 24px;
+  max-width: 70ch;
+}
+.cdv-welcome h2 {
+  font: 900 var(--fs-lg)/1.2 var(--display);
+  margin: 0 0 8px;
+}
+.cdv-welcome h3 {
+  font: 800 var(--fs-md)/1.2 var(--display);
+  margin: 18px 0 6px;
+}
+.cdv-welcome ul,
+.cdv-changes ul,
+.cdv-problems ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cdv-welcome li,
+.cdv-changes li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 2px 0;
+}
+.cdv-link {
+  border: 0;
+  background: transparent;
+  padding: 4px 6px;
+  border-radius: 6px;
+  font: 700 var(--fs-body)/1.3 var(--body);
+  color: var(--sky);
+  cursor: pointer;
+  text-align: left;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 28px;
+}
+.cdv-link:hover {
+  background: var(--sky-wash);
+  text-decoration: underline;
+}
+/* Scoped to this view. Unscoped, it reached every <kbd> in the app -- the status bar's
+   ?/CMD-K hints and the help pane's shortcut keys included -- where it replaced the global
+   rule's ink chip with a paper one but left that rule's `color` alone -- so every key in the
+   app rendered yellow on near-white, this view's included. */
+.cdv-root kbd {
+  font: 800 var(--fs-sm)/1 var(--body);
+  padding: 2px 6px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--paper);
+  /* Set with the background, not inherited: this rule swaps the global chip's ink fill for a
+     paper one, so the global's light-on-ink `color` would be invisible here. */
+  color: var(--ink);
+}
+
+/* token colours (light theme) */
+.sx-kw {
+  color: var(--pink-text);
+  font-weight: 700;
+}
+.sx-str {
+  color: var(--ok-text);
+}
+.sx-com {
+  color: var(--muted);
+  font-style: italic;
+}
+.sx-num {
+  color: var(--amber-text);
+}
+.sx-fn {
+  color: var(--sky);
+}
+.sx-type {
+  color: #0a6b7c;
+  font-weight: 600;
+}
+.sx-punct {
+  color: var(--muted);
+}
+.sx-tag {
+  color: var(--pink-text);
+}
+.sx-attr {
+  color: var(--amber-text);
+}
+.sx-key {
+  color: var(--sky);
+}
+.sx-head {
+  color: var(--pink-text);
+  font-weight: 800;
+}
+.sx-var {
+  color: var(--pink-text);
+}
+
+/* ---- bottom panel ---- */
+.cdv-panel {
+  grid-area: panel;
+  height: 250px;
+}
+.cdv-panel-tabs {
+  gap: 6px;
+  background: var(--cyan-wash);
+}
+.cdv-panel-tabs b {
+  display: inline-block;
+  min-width: 18px;
+  padding: 1px 5px;
+  margin-left: 4px;
+  border-radius: 999px;
+  background: var(--pink);
+  color: var(--ink);
+}
+.cdv-term-host {
+  flex: 1;
+  min-height: 0;
+  padding: 8px;
+}
+.cdv-term-host .aw-term {
+  box-shadow: none;
+  border-width: 2px;
+}
+.cdv-problems,
+.cdv-changes {
+  flex: 1;
+  padding: 4px 8px;
+}
+.cdv-problems li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: baseline;
+  padding: 5px 4px;
+  border-bottom: 2px dashed var(--line);
+}
+
+/* ---- agent card ---- */
+.cdv-card {
+  grid-area: card;
+  width: 240px;
+}
+.cdv-card-body {
+  padding: 10px 12px 14px;
+  flex: 1;
+}
+.cdv-agent-title {
+  margin: 0 0 4px;
+  font: 800 var(--fs-md)/1.3 var(--display);
+  overflow-wrap: anywhere;
+}
+.cdv-state {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+.cdv-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+  background: var(--line-cool);
+  flex: none;
+}
+.cdv-dot-live {
+  background: var(--ok);
+}
+.cdv-dot-awaiting {
+  background: var(--pink);
+}
+.cdv-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  margin: 0 0 10px;
+  font-size: var(--fs-sm);
+}
+.cdv-facts dt {
+  font-weight: 800;
+}
+.cdv-facts dd {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cdv-card-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.cdv-btn {
+  box-shadow: var(--ch-sh-sm);
+}
+.cdv-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+.cdv-primary {
+  background: var(--yellow);
+  flex: 1 1 100%;
+}
+.cdv-card h4 {
+  margin: 12px 0 4px;
+  font: 800 var(--fs-body)/1.2 var(--display);
+}
+.cdv-subs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cdv-subs li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 6px;
+  align-items: center;
+  padding: 3px 0;
+  font-size: var(--fs-sm);
+}
+.cdv-sub-tx {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- quick open ---- */
+.cdv-quick {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 8vh;
+  background: rgba(255, 248, 231, 0.6);
+}
+.cdv-quick-card {
+  width: min(640px, calc(100% - 32px));
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: var(--r-card, 14px);
+  box-shadow: var(--ch-sh-xl);
+  overflow: hidden;
+}
+.cdv-quick-input {
+  width: 100%;
+  border: 0;
+  border-bottom: 3px solid var(--ink);
+  padding: 12px 14px;
+  font: 700 var(--fs-md)/1.2 var(--body);
+  background: var(--yellow-wash);
+  color: var(--ink);
+  outline: none;
+}
+.cdv-quick-list {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  max-height: 50vh;
+  overflow: auto;
+}
+.cdv-quick-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cdv-quick-list li.cdv-on,
+.cdv-quick-list li:hover {
+  background: var(--yellow-soft);
+}
+
+/* ---- the explorer and the agent card, hosted in left-sidebar sections ---- */
+.alef-sec-custom > :is(.cdv-explorer, .cdv-card) {
+  width: auto;
+  margin: 0 -4px;
+  border-width: 2px;
+  border-radius: 10px;
+  box-shadow: none;
+  font: var(--fs-body)/1.4 var(--body);
+  color: var(--ink);
+}
+.alef-sec-custom > .cdv-explorer .cdv-box-head,
+.alef-sec-custom > .cdv-card .cdv-box-head {
+  min-height: 32px;
+  padding: 2px 6px 2px 8px;
+  border-bottom-width: 2px;
+}
+.alef-sec-custom > .cdv-card .cdv-box-head {
+  display: none;
+}
+.alef-sec-custom > .cdv-explorer .cdv-tree {
+  max-height: 52vh;
+}
+.alef-sec-custom .cdv-card-btns {
+  flex-wrap: wrap;
+}
+
+/* ---- focus mode: only the editor ---- */
+.cdv-root.cdv-focus {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-areas: "ed";
+}
+.cdv-root.cdv-focus > :is(.cdv-panel, .cdv-phone-tabs) {
+  display: none !important;
+}
+
+/* ---- phone: one column, tabs ---- */
+.cdv-phone-tabs {
+  display: none;
+}
+body.alef-phone .cdv-root {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas: "tabs" "main";
+  gap: 8px;
+  padding: 8px;
+}
+body.alef-phone .cdv-phone-tabs {
+  grid-area: tabs;
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+}
+body.alef-phone .cdv-phone-tab {
+  min-height: var(--touch, 44px);
+  flex: 1 0 auto;
+}
+body.alef-phone .cdv-root > :is(.cdv-editor, .cdv-panel) {
+  grid-area: main;
+  width: auto;
+  height: auto;
+  display: none;
+}
+body.alef-phone .cdv-root[data-pane="editor"] > .cdv-editor,
+body.alef-phone .cdv-root[data-pane="terminal"] > .cdv-panel {
+  display: flex;
+}
+body.alef-phone .cdv-root.cdv-focus > .cdv-editor {
+  display: flex;
+}
+body.alef-phone .cdv-row {
+  min-height: var(--touch, 44px);
+}
+body.alef-phone .cdv-crumbs {
+  flex-basis: 100%;
+}

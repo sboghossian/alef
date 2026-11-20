@@ -1,0 +1,181 @@
+/* "usage" feature: the panel's day/week city breakdown and the agent-panel usage section.
+   Scoped entirely to usage-* classes — no shared selectors touched. */
+
+.usage-h {
+  margin: 12px 0 4px;
+  font-size: var(--fs-body);
+}
+
+.usage-list {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.usage-city-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: var(--fs-sm);
+}
+
+.usage-city-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.usage-city-note,
+.usage-note {
+  font-size: var(--fs-xs);
+  opacity: 0.7;
+}
+
+.usage-empty,
+.usage-loading {
+  font-size: var(--fs-sm);
+  opacity: 0.7;
+}
+
+.usage-head {
+  margin: 0 0 6px;
+  font-size: var(--fs-body);
+}
+
+.usage-model-row {
+  margin-bottom: 8px;
+}
+
+.usage-model-row > span {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: var(--fs-sm);
+}
+
+.usage-model-name {
+  font-weight: 600;
+}
+
+.usage-token-list {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.usage-token-row {
+  display: flex;
+  gap: 4px;
+  font-size: var(--fs-xs);
+  opacity: 0.85;
+}
+
+/* Range view: 7/30/90 toggle, model-mix doughnut, activity-by-hour bars. */
+.usage-range {
+  display: flex;
+  gap: 4px;
+  margin: 14px 0 2px;
+}
+
+.usage-range-btn {
+  padding: 2px 10px;
+  font-size: var(--fs-xs);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.usage-range-btn.is-on {
+  background: rgba(255, 210, 63, 0.9);
+  border-color: transparent;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.usage-sub {
+  margin: 10px 0 4px;
+  font-size: var(--fs-xs);
+  opacity: 0.75;
+  font-weight: 600;
+}
+
+.usage-mix {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.usage-mix svg {
+  flex: none;
+}
+
+.usage-mix-total {
+  font-size: var(--fs-xs);
+  font-weight: 700;
+  fill: currentColor;
+}
+
+.usage-mix-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.usage-mix-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--fs-xs);
+}
+
+.usage-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.usage-mix-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usage-mix-pct {
+  opacity: 0.8;
+  font-variant-numeric: tabular-nums;
+}
+
+.usage-bar {
+  fill: rgba(122, 167, 255, 0.75);
+}
+
+.usage-bar.is-peak {
+  fill: var(--yellow);
+}
+
+.usage-axis {
+  font-size: 7px;
+  fill: currentColor;
+  opacity: 0.6;
+}
+
+.usage-city-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

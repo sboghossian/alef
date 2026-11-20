@@ -1,0 +1,29 @@
+/* "wake-recall" agent-panel line: did this session read from the Institute of Truth when it woke.
+   Scoped to wr- classes; colours come from style.css's tokens. */
+
+.wr-line {
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.wr-line.wr-nothing,
+.wr-line.wr-unread,
+.wr-line.wr-pending {
+  color: var(--muted);
+}
+
+.wr-sub,
+.wr-notes {
+  font-size: var(--fs-min);
+  color: var(--muted);
+}
+
+.wr-notes {
+  margin: 4px 0 0;
+  padding-left: 16px;
+  overflow-wrap: anywhere;
+}
+
+.wr-more {
+  list-style: none;
+}

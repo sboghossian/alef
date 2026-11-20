@@ -1,0 +1,35 @@
+/* The shared view header (view-header.ts). Sized off the palette's own tokens: title in the
+   display face at 22/700, the sub line in the body face at --fs-body, muted. */
+.view-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s1) var(--s4);
+  margin: 0 0 var(--s3);
+}
+.view-head-title {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s2);
+  margin: 0;
+  color: var(--ink);
+  font: 700 22px/1.2 var(--display);
+}
+.view-head-ico {
+  display: inline-flex;
+  color: var(--ink);
+}
+.view-head-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2);
+  margin-left: auto;
+}
+.view-head-sub {
+  order: 3;
+  flex: 1 0 100%;
+  margin: 0;
+  color: var(--muted);
+  font: 600 var(--fs-body) / 1.4 var(--body);
+}
